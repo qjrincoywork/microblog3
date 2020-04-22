@@ -88,4 +88,10 @@ class AppController extends Controller
         }
         return $errors;
     }
+
+    public function jsonResponse($data){
+        $jsonData = json_encode($data);
+        $response = $this->response->withType('json')->withStringBody($jsonData);
+        return $response;
+    }
 }

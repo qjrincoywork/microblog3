@@ -38,11 +38,11 @@ class SystemHelper extends Helper {
     }
     
     public function reactionCount($postId, $reaction) {
-        $model = new $reaction();
-        $count = $model->find('count', [
+        $model = TableRegistry::get($reaction);
+        $count = $model->find('all',[
             'conditions' => [$reaction.".post_id" => $postId,
                              $reaction.".deleted" => 0]
-        ]);
+        ])->count();
         
         return $count;
     }
@@ -81,7 +81,6 @@ class SystemHelper extends Helper {
     
     public function postReaction($postId, $userId, $reaction) {
         $hasReacted = false;
-        $reaction = "Posts";
         $post = TableRegistry::get($reaction);
         $data = $post->find('all',[
             'conditions' => [$reaction.'.user_id' => $userId, 

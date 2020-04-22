@@ -45,7 +45,7 @@ $(function () {
                           ".update_picture, .change_password, .cancel_upload," + 
                           ".preview_image, .edit_preview_image", function (event) {
         event.preventDefault();
-        // event.stopPropagation();
+        event.stopPropagation();
         
         var form = $(this).closest("form").not(".form-group"),
             action = form.attr("action"),
@@ -112,14 +112,6 @@ $(function () {
         }
         
         posting.done(function (data) {
-            /* if(data.error) {
-                fx.displayNotify(
-                    "The request has been black-holed",
-                    data.error + ".",
-                    "danger"
-                );
-            } */
-
             if(action == undefined) {
                 if(modal) {
                     switch (className) {
@@ -138,23 +130,22 @@ $(function () {
                         width
                     );
                     fx.modalUiHelper();
-                }
-                    
-                switch (className) {
-                    case "follow_user":
-                    case "unfollow_user":
-                        $("#mainContent").load(location.href);
-                        break;
-                    case "get_follow":
-                        $("#profile-post-container").html(data);
-                        break;
-                    default:
-                        $("#mainContent").load(location.href);
-                        break;
+                } else {
+                    switch (className) {
+                        case "follow_user":
+                        case "unfollow_user":
+                            $("#mainContent").load(location.href);
+                            break;
+                        case "get_follow":
+                            $("#profile-post-container").html(data);
+                            break;
+                        default:
+                            $("#mainContent").load(location.href);
+                            break;
+                    }
                 }
             } else {
-                console.log(data);
-                data = $.parseJSON(data);
+                // console.log(data);
                 if(data.success) {
                     switch (className)
                     {
@@ -205,7 +196,8 @@ $(function () {
                                 }, 1000);
                                 break;
                             default:
-                                $("#mainContent").load(location.href);
+                                // $("#mainContent").load(location.href);
+                                location.reload();
                                 break;
                         }
                 } else {

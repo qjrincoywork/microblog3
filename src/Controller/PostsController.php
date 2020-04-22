@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -13,11 +14,13 @@ use Cake\ORM\TableRegistry;
  */
 class PostsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null
-     */
+    
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->viewBuilder()->setLayout('main');
+    }
+    
     public function index()
     {
         $this->paginate = [
@@ -35,13 +38,22 @@ class PostsController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($id)
     {
-        $post = $this->Posts->get($id, [
-            'contain' => ['Users', 'Posts'],
+        $data = $this->Posts->get($id, [
+            'contain' => ['Users'],
         ]);
-
-        $this->set('post', $post);
+        // $data = $this->Posts->find($id)->first();
+        $this->set('data', $data);
+        $this->paginate = [
+            'limit' => 3,
+            'conditions' => ['Comments.post_id' => $id, 'Comments.deleted' => 0],
+            'order' => [
+                'Comments.created'
+            ]
+        ];
+        $this->set('comments', $this->paginate('Comments'));
+        $this->set('title', 'User Post');
     }
 
     /**
@@ -51,12 +63,6 @@ class PostsController extends AppController
      */
     public function add()
     {
-        /* $postsTable = TableRegistry::getTableLocator()->get('Posts');
-        $post = $postsTable->newEntity();
-        if ($postsTable->save($post)) {
-            // The $article entity contains the id now
-            $id = $article->id;
-        } */
         $post = $this->Posts->newEntity();
         $datum['success'] = false;
         if ($this->request->is('post')) {
@@ -93,7 +99,8 @@ class PostsController extends AppController
                 $errors = $this->formErrors($post);
                 $datum['errors'] = $errors;
             }
-            echo json_encode($datum);
+            
+            return $this->jsonResponse($datum);
         }
     }
 
@@ -104,12 +111,25 @@ class PostsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id)
     {
         $post = $this->Posts->get($id, [
-            'contain' => [],
+            'contain' => ['Users'],
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
+            /* $post = $this->Posts->patchEntity($post, $this->request->getData());
+            if ($this->Posts->save($post)) {
+                $this->Flash->success(__('The post has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The post could not be saved. Please, try again.')); */
+            return $this->jsonResponse($data);
+        }
+        $this->set(compact('post'));
+        
+        // $this->set(compact('post', 'users'));
+        /* if ($this->request->is(['patch', 'post', 'put'])) {
             $post = $this->Posts->patchEntity($post, $this->request->getData());
             if ($this->Posts->save($post)) {
                 $this->Flash->success(__('The post has been saved.'));
@@ -118,8 +138,8 @@ class PostsController extends AppController
             }
             $this->Flash->error(__('The post could not be saved. Please, try again.'));
         }
-        $users = $this->Posts->Users->find('list', ['limit' => 200]);
-        $this->set(compact('post', 'users'));
+        // $users = $this->Posts->Users->find('list', ['limit' => 200]);
+        $this->set(compact('post', 'users')); */
     }
 
     /**

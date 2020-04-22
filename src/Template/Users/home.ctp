@@ -5,7 +5,6 @@
 <?php
     $article = '';
     if(isset($data)) {
-        // die('home');
         foreach ($data as $key => $value) {
             $gender = $value['user']->gender;
             $profilePic = $value['user']->image;
@@ -18,17 +17,12 @@
             // $userId = $this->Session->read('Auth.User')['id'];
             
             $isShared = $this->System->postReaction($postId, $myId, 'Posts');
-            // $isLiked = $this->System->postReaction($postId, $myId, 'Like');
-            // $isCommented = $this->System->postReaction($postId, $myId, 'Comment');
-            $isLiked = '';
-            $isCommented = '';
+            $isLiked = $this->System->postReaction($postId, $myId, 'Likes');
+            $isCommented = $this->System->postReaction($postId, $myId, 'Comments');
             
-            // $likeCount = $this->System->reactionCount($postId, 'Like');
-            // $commentCount = $this->System->reactionCount($postId, 'Comment');
-            // $shareCount = $this->System->reactionCount($postId, 'Post');
-            $likeCount = '';
-            $commentCount = '';
-            $shareCount = '';
+            $likeCount = $this->System->reactionCount($postId, 'Likes');
+            $commentCount = $this->System->reactionCount($postId, 'Comments');
+            $shareCount = $this->System->reactionCount($postId, 'Posts');
             
             $article .= "<div class='post-container border'>";
             $article .= "   <div class='row'>
@@ -109,7 +103,7 @@
                                 <button href='".$this->Url->build(['controller' => 'posts', 'action' => 'share', 'post_id' => $postId])."' class='share_post col-sm-3' postid='$postId'>
                                     <span class='" . ($isShared ? 'fas' : 'far') ." fa-share-square' data-toggle='tooltip' data-placement='top' title='Share'> ". (!empty($shareCount) ? $shareCount : '')  ."</span>
                                 </button>
-                                <a href='".$this->Url->build(['controller' => 'posts', 'action' => 'view', 'post_id' => $postId])."' class='col-sm-3' postid='$postId'>
+                                <a href='".$this->Url->build(['controller' => 'posts', 'action' => 'view', $postId])."' class='col-sm-3' postid='$postId'>
                                     <span class='fa fa-eye' data-toggle='tooltip' data-placement='top' title='View post'></span>
                                 </a>
                             </div>

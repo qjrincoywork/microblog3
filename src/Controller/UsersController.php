@@ -46,28 +46,6 @@ class UsersController extends AppController
         throw $exception;
     } */
     public function getPosts($conditions = null) {
-        /* $this->Users->virtualFields['image'] = "CASE 
-                                                        WHEN User.image IS NULL
-                                                            THEN
-                                                                CASE
-                                                                WHEN User.gender = 0
-                                                                    THEN '/img/default_avatar_f.svg'
-                                                                    ELSE '/img/default_avatar_m.svg'
-                                                                END
-                                                        ELSE concat('/',User.image)
-                                                    END";
-        $this->Posts->virtualFields['post_ago'] = "CASE
-                                                    WHEN Post.created between date_sub(now(), INTERVAL 120 second) and now() 
-                                                        THEN 'Just now'
-                                                    WHEN Post.created between date_sub(now(), INTERVAL 60 minute) and now() 
-                                                        THEN concat(minute(TIMEDIFF(now(), Post.created)), ' minutes ago')
-                                                    WHEN datediff(now(), Post.created) = 1
-                                                        THEN 'Yesterday'
-                                                    WHEN Post.created between date_sub(now(), INTERVAL 24 hour) and now() 
-                                                        THEN concat(hour(TIMEDIFF(NOW(), Post.created)), ' hours ago')
-                                                    ELSE concat(datediff(now(), Post.created),' days ago')
-                                                END"; */
-        // pr($this->Users->findById(1)->first());
         $this->paginate = [
             'Posts' => [
                 'contain' => ['Users'],
@@ -80,8 +58,8 @@ class UsersController extends AppController
                 ],
             ]
         ];
-        $data = $this->paginate($this->Posts);
-        return $data;
+        
+        return $this->paginate($this->Posts);
     }
     
     public function home()

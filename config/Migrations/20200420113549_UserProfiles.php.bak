@@ -1,0 +1,29 @@
+<?php
+use Migrations\AbstractMigration;
+
+class UserProfiles extends AbstractMigration
+{
+    /**
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     * @return void
+     */
+    public function change()
+    {
+        $table = $this->table('user_profiles');
+        $table->addColumn('user_id', 'integer', ['null' => false])
+              ->addColumn('email', 'string', ['null' => false, 'limit' => 255])
+              ->addColumn('image', 'string', ['default' => null, 'null' => true, 'limit' => 255])
+              ->addColumn('first_name', 'string', ['null' => false, 'limit' => 255])
+              ->addColumn('last_name', 'string', ['null' => false, 'limit' => 255])
+              ->addColumn('middle_name', 'string', ['null' => true, 'limit' => 255])
+              ->addColumn('suffix', 'string', ['null' => true, 'limit' => 255])
+              ->addColumn('gender', 'integer', ['null' => false,'limit' => 2, 'comment' => '0-female; 1-male;'])
+              ->addColumn('deleted', 'integer', ['default' => 0, 'null' => false,'limit' => 2])
+              ->addColumn('created', 'datetime', ['default' => null, 'null' => false])
+              ->addColumn('modified', 'datetime', ['default' => null, 'null' => false])
+              ->create();
+    }
+}

@@ -1,0 +1,20 @@
+@font-face {
+    font-family: "Digital 7";
+    src: url('../fonts/digital-7.ttf') format('truetype');
+}
+@font-face {
+    font-family: "Poppins";
+    src: url('../fonts/Poppins-Regular.otf') format('opentype');
+}
+@font-face {
+    font-family: "Days One";
+    src: url('../fonts/days-one.ttf') format('truetype');
+}
+@font-face {
+    font-family: "Nexa Bold";
+    src: url('../fonts/nexa-bold.otf') format('opentype');
+}
+@font-face {
+    font-family: "Nexa light";
+    src: url('../fonts/nexa-light.otf') format('opentype');
+}

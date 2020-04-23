@@ -3,13 +3,12 @@
 <?php else:?>
 <?php
     $paginator = $this->Paginator;
-    // pr($data);
     $content = $data->content;
     $postId = $data->id;
     $postAgo = $data->post_ago;
-    $sharePic = $data->user['image'];
+    $sharePic = $data->user->profile_image;
     // $fullName = $this->System->getFullNameById($data->user_id);
-    $fullName = $data->user['full_name'];
+    $fullName = $data->user->full_name;
     $userId = $myId;
     $myPost = $data->user_id === $userId ? true : false;
     
@@ -41,7 +40,7 @@
                     </button>
                 </div>
                 <?php endif;?>
-                <div class="post-user"><a href='<?=$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $data->user_id])?>'>
+                <div class="post-user"><a href='<?=$this->Url->build(['controller' => 'users', 'action' => 'profile', $data->user_id])?>'>
                     <?=$fullName?>
                 </a></div>
                 <div class="post-ago">
@@ -148,7 +147,7 @@
                                 </div>";
             $userProfile .= "   <div class='row p-2 col-sm-11'>";
             $userProfile .= $commentButtons;
-            $userProfile .= "       <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $val->user_id])."'>
+            $userProfile .= "       <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', $val->user_id])."'>
                                     $commenter
                                     </a></div>
                                     <div class='post-ago'>

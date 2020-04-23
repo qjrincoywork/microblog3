@@ -83,13 +83,16 @@ class PostsTable extends Table
 
         $validator
             ->add('image', [
-                'validExtension' => [
-                    'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                'imageType' => [
+                    // 'rule' => ['extension', ['gif', 'jpeg', 'png', 'jpg']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'rule' => 'imageType',
+                    'provider' => 'table',
+                    'allowEmpty' => true,
                     'message' => __('Please input a valid image.')
                 ]
             ])
-        //     // ->scalar('image')
-        //     // ->maxLength('image', 255)
+            ->scalar('image')
+            ->maxLength('image', 255)
             ->allowEmptyFile('image');
 
         $validator
@@ -114,18 +117,16 @@ class PostsTable extends Table
         return $rules;
     }
 
-    public function imageType($post)
+    public function imageType($value, $context)
     {
-        pr($post);
-        die('imageType');
-        /* if($this->data[$this->alias]['image'] != 'undefined' && isset($this->data[$this->alias]['image']['type'])) {
+        if($context['data']['image'] != 'undefined' && isset($context['data']['image']['type'])) {
             $types = ['image/gif', 'image/png', 'image/jpg', 'image/jpeg'];
-            if(in_array($this->data[$this->alias]['image']['type'], $types)) {
+            if(in_array($context['data']['image']['type'], $types)) {
                 return true;
             }
         } else {
             return true;
         }
-        return false; */
+        return false;
     }
 }

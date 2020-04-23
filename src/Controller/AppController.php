@@ -75,9 +75,7 @@ class AppController extends Controller
         $auth = $this->request->getSession()->read('Auth.User');
         $myId = $this->request->getSession()->read('Auth.User.id');
         $systemLogo = "/img/microbloglogo.png";
-        /* $this->set('myId', $myId);
-        $this->set('systemLogo', "/img/microbloglogo.png");
-        $this->set('auth', $auth); */
+        
         $this->set(compact('auth', 'myId', 'systemLogo'));
     }
 

@@ -145,7 +145,7 @@ $(function () {
                     }
                 }
             } else {
-                // console.log(data);
+                console.log(data);
                 if(data.success) {
                     switch (className)
                     {
@@ -160,7 +160,7 @@ $(function () {
                             suffix = "d";
                             break;
                     }
-
+                    
                     $(".modal").modal("hide");
                     var title = className.split("_")[1],
                         notifAction = className.split("_")[0];

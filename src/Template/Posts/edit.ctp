@@ -1,49 +1,39 @@
 <?php
-    pr($post);
-    die('view');
-    $content = $this->data['Post']['content'];
-    $id = $this->data['Post']['id'];
-    $postAgo = $this->data['Post']['post_ago'];
-    $profPic = $this->data['UserProfile']['image'];
-    $userId = $this->Session->read('Auth.User')['id'];
-    $postImage = !empty($this->data['Post']['image']) ? "/".$this->data['Post']['image'] : '';
-    $fullName = $this->System->getFullNameById($userId);
+    $content = $post['content'];
+    $id = $post['id'];
+    $postAgo = $post['post_ago'];
+    $profPic = $post['user']->image;
+    $userId = $myId;
+    $postImage = !empty($post['image']) ? "/".$post['image'] : '';
+    // $fullName = $this->System->getFullNameById($userId);
+    $fullName = $post['user']->full_name;
 ?>
-<div class="posts form large-9 medium-8 columns content">
-    <?= $this->Form->create($post) ?>
-    <fieldset>
-        <legend><?= __('Edit Post') ?></legend>
-        <?php
-            echo $this->Form->control('user_id', ['options' => $users]);
-            echo $this->Form->control('content');
-            echo $this->Form->control('image');
-            echo $this->Form->control('post_id');
-            echo $this->Form->control('deleted');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
-
-<div class="container p-3">
-    <?= $this->Form->create('Post',
-                            ['url' => ['controller' =>'posts', 'action' => 'edit']],
-                            ['inputDefaults'=> ['div' => 'form-group']]); ?>
+<?php 
+    $myTemplates = [
+        'legend' => false,
+        'inputContainer' => '<div class="form-group">{{content}}</div>',
+        'inputContainerError' => '<div class="input {{type}}{{required}} error">{{content}}{{error}}</div>',
+        'error' => '<span class="help-block">{{content}}</span>',
+    ];
+    $this->Form->setTemplates($myTemplates);
+?>
+<div class="container mt-3">
+    <?= $this->Form->create($post); ?>
     <?php
-        echo $this->Form->input('content', array(
+        echo $this->Form->control('content', array(
                                 'id' => 'content',
+                                'type' => 'text',
                                 'label' => false,
                                 'class' => 'mb-3 form-control ',
                                 'placeholder' => "Edit Content..."
         ));
         
-        echo $this->Form->hidden('id', array(
-                                'label' => false,
+        echo $this->Form->hidden('id', [
                                 'id' => 'id'
-        ));
+        ]);
     ?>
     
-    <?= $this->Form->input('image',
+    <?= $this->Form->control('image',
                         ['class' => 'image_input form-control',
                         'id' => 'image',
                         'type' => 'file',
@@ -80,9 +70,11 @@
     </div>
     <button class="edit_preview_image far fa-image" data-toggle='tooltip' data-placement='top' title='change image' style="float: left; font-size: 30px; color: #4c82a3;">
     </button>
-    <?= $this->Form->end(['label' => 'edit post',
-                            'class' => 'edit_post btn btn-primary',
-                            'div' => 'form-group mt-3',
-                            'type' => 'submit',
-                            'style' => 'float: right']); ?>
+        <?= $this->Form->button('Edit Post',
+                                ['class' => 'edit_post btn btn-primary mt-3',
+                                // 'label' => 'edit post',
+                                // 'div' => 'form-group mt-3',
+                                'type' => 'submit',
+                                'style' => 'float: right'])?>
+    <?= $this->Form->end(); ?>
 </div>

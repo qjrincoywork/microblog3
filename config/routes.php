@@ -72,11 +72,11 @@ Router::scope('/', function (RouteBuilder $routes) {
     ); */
 
     // Create a route that only responds to PUT requests
-    $routes->put(
+    /* $routes->put(
         '/users/:id',
         ['controller' => 'Users', 'action' => 'update'],
         'users:update'
-    );
+    ); */
     // $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
     /**

@@ -1,33 +1,77 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \Cake\Datasource\EntityInterface $user
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $user->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $user->id)]
-            )
-        ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['action' => 'index']) ?></li>
-    </ul>
-</nav>
-<div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($user) ?>
-    <fieldset>
-        <legend><?= __('Edit User') ?></legend>
-        <?php
-            echo $this->Form->control('username');
-            echo $this->Form->control('password');
-            echo $this->Form->control('token');
-            echo $this->Form->control('is_online');
-            echo $this->Form->control('deleted');
+<div class="card-body card-block mt-2">
+    <?php 
+    $myTemplates = [
+        'legend' => false,
+        'inputContainer' => '<div class="form-group">{{content}}</div>',
+        // 'input' => '<input type="{{type}}" class="form-control form-control-sm is-invalid" name="{{name}}"{{attrs}}/>',
+        'inputContainerError' => '<div class="input {{type}}{{required}} error">{{content}}{{error}}</div>',
+        'error' => '<span class="help-block">{{content}}</span>',
+    ];
+    $this->Form->setTemplates($myTemplates);
+    ?>
+    <?= $this->Form->create($user); ?>
+    <?php
+        $options = ['' => 'Select Gender...', 0 => 'Female', 1 => 'Male'];
+        echo $this->Form->controls([
+                'username' => [
+                    'placeholder' => "Enter username ...", 
+                    'required' => false,
+                    'label'=>['text'=>'Username',
+                            'for' => 'username',
+                            'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('username')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'email' => [
+                    'placeholder' => "Enter email ...", 
+                    'required' => false,
+                    'label'=>['text'=>'Email',
+                            'for' => 'email',
+                            'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('email')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'gender' => [
+                    'required' => false,
+                    'options' => $options,
+                    'label'=>['text'=>'Gender',
+                            'for' => 'gender',
+                            'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('gender')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'first_name' => [
+                    'placeholder' => "Enter first name ...",
+                    'required' => false,
+                    'label'=>['text'=>'First name',
+                                'for' => 'first_name',
+                                'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('first_name')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'last_name' => [
+                    'placeholder' => "Enter last name ...",
+                    'required' => false,
+                    'label'=>['text'=>'Last Name',
+                                'for' => 'last_name',
+                                'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('last_name')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'middle_name' => [
+                    'placeholder' => "Enter middle Name ...",
+                    'required' => false,
+                    'label'=>['text'=>'Middle Name',
+                                'for' => 'middle_name',
+                                'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('middle_name')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+                'suffix' => [
+                    'placeholder' => "Enter suffix ...",
+                    'required' => false,
+                    'label'=>['text'=>'Suffix',
+                                'for' => 'suffix',
+                                'class'=>'col-form-label'],
+                    'class' => ($this->Form->isFieldError('suffix')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
+                ],
+            ]);
         ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
+    
+    <?= $this->Form->button("edit profile", ['class'=>'edit_profile btn btn-primary form-control mt-3']); ?>
+    <?= $this->Form->end(); ?>
 </div>

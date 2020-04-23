@@ -35,6 +35,9 @@ class UsersController extends AppController
         // $this->Auth->allow(['register', 'activation', 'logout', 'testEmail']);
         $this->viewBuilder()->setLayout('main');
         // $this->Security->requireSecure();
+        if($this->request->is('ajax')) {
+            $this->viewBuilder()->setLayout(false);
+        }
     }
 
     /* public function blackHole($error = '', SecurityException $exception = null)
@@ -45,7 +48,7 @@ class UsersController extends AppController
 
         throw $exception;
     } */
-    public function getPosts($conditions = null) {
+    public function getPosts($conditions) {
         $this->paginate = [
             'Posts' => [
                 'contain' => ['Users'],
@@ -153,7 +156,7 @@ class UsersController extends AppController
 
     public function logout()
     {
-        $this->Flash->success('You are now logout');
+        // $this->Flash->success('You are now logout');
         return $this->redirect($this->Auth->logout());
     }
 
@@ -217,76 +220,133 @@ class UsersController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function profile($id)
     {
-        $user = $this->Users->get($id, [
-            'contain' => [],
-        ]);
-
-        $this->set('user', $user);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $user = $this->Users->newEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+        $conditions = [];
+        if(!$id) {
+            throw new NotFoundException();
         }
-        $this->set(compact('user'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $user = $this->Users->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $this->set(compact('user'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
+        
+        $myId = $this->request->getSession()->read('Auth.User.id');
+        if($myId !== $id) {
+            $conditions = ['Posts.deleted' => 0];
         } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            $conditions = ['Posts.user_id' => $id, 'Posts.deleted' => 0];
         }
+        
+        $profile = $this->Users->find('all', [
+            'conditions' => ['Users.id' => $id, 'Users.is_online !=' => 2]
+        ])->first();
 
-        return $this->redirect(['action' => 'index']);
+        if(!$profile) {
+            throw new NotFoundException();
+        }
+        
+        $data = $this->getPosts($conditions);
+        
+        $this->set(compact('data', 'profile'));
+    }
+    
+    public function edit() {
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($id);
+        if($this->request->is(['put', 'patch'])) {
+            $datum['success'] = false;
+            $postData = $this->request->getData();
+            $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
+            $user->user_id = $id;
+            
+            if(!$user->getErrors()) {
+                if ($this->Users->save($user)) {
+                    $datum['success'] = true;
+                }
+            } else {
+                $errors = $this->formErrors($user);
+                $datum['errors'] = $errors;
+            }
+            
+            return $this->jsonResponse($datum);
+        }
+        $this->set(compact('user'));
+    }
+
+    public function following() {
+        $field = key($this->request->getQuery());
+        $id = $this->request->getQuery()[$field];
+        $data = [];
+
+        if($field == 'user_id') {
+            $conditions = ['Follows.'.$field => $id];
+            $column = 'following_id';
+            $message = 'No user following';
+        } else {
+            $conditions = ['Follows.'.$field => $id];
+            $column = 'user_id';
+            $message = "Don't have any follower";
+        }
+        
+        $ids = TableRegistry::getTableLocator()
+                            ->get('Follows')
+                            ->find('list', ['valueField' => $column])
+                            ->where($conditions)->toArray();
+        if($ids) {
+            $this->paginate = [
+                'Users' => [
+                    'conditions' => [
+                        ['Users.is_online !=' => 2],
+                        ['Users.deleted' => 0],
+                        ['Users.id IN' => $ids],
+                    ],
+                    'limit' => 4,
+                    'order' => [
+                        'Users.created' => 'desc',
+                    ],
+                ]
+            ];
+            $data = $this->paginate();
+        }
+        
+        $this->set(compact('message', 'data'));
+    }
+
+    public function editPicture() {
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($id);
+        if($this->request->is(['put', 'patch'])) {
+            $datum['success'] = false;
+            $postData = $this->request->getData();
+            $username = $user->username;
+            
+            if($postData['image'] == 'undefined') {
+                $postData['image'] = null;
+                $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
+            } else {
+                $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
+                $uploadFolder = "img/".$username;
+                
+                if(!file_exists($uploadFolder)) {
+                    mkdir($uploadFolder);
+                }
+                
+                $path = $uploadFolder."/".$postData['image']['name'];
+                if(move_uploaded_file($postData['image']['tmp_name'],
+                                        $path)) {
+                    $user->image = $path;
+                }
+            }
+            $user->user_id = $id;
+            
+            if(!$user->getErrors()) {
+                if ($this->Users->save($user)) {
+                    $datum['success'] = true;
+                }
+            } else {
+                $errors = $this->formErrors($user);
+                $datum['errors'] = $errors;
+            }
+            
+            return $this->jsonResponse($datum);
+        }
+        $this->set(compact('user'));
     }
 }

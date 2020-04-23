@@ -36,7 +36,7 @@ class User extends Entity
         'created' => true,
         'modified' => true,
     ]; */
-    protected $_virtual = ['full_name', 'image'];
+    protected $_virtual = ['full_name', 'profile_image', 'joined'];
 
     protected function _getFullName()
     {
@@ -46,7 +46,7 @@ class User extends Entity
         return $fullName;
     }
     
-    protected function _getImage()
+    protected function _getProfileImage()
     {
         if(!$this->_properties['image']) {
             if($this->_properties['gender']) {
@@ -60,12 +60,13 @@ class User extends Entity
         
         return $image;
     }
-    /**
-     * Fields that are excluded from JSON versions of the entity.
-     *
-     * @var array
-     */
-
+    
+    protected function _getJoined()
+    {
+        $joined = date(' M Y', strtotime($this->_properties['created']));
+        return $joined;
+    }
+    
     protected $_hidden = [
         'password',
         'token',

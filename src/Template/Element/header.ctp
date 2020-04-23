@@ -1,6 +1,6 @@
 <?php
     $here = $this->request->getAttribute("here");
-    $myPic = $this->request->getSession()->read('Auth.User.image');
+    $myPic = $this->System->getUserPic($myId);
     $myFullName = $this->request->getSession()->read('Auth.User.full_name');
     $email = $this->request->getSession()->read('Auth.User.email');
 ?>

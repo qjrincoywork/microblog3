@@ -47,24 +47,9 @@ class SystemHelper extends Helper {
         return $count;
     }
     
-    public function getUserPic($userId) {
-        $user = new User();
-        $userProfile = new UserProfile();
-        $userProfile->virtualFields['image'] = "CASE 
-                                                    WHEN UserProfile.image IS NULL
-                                                    THEN
-                                                        CASE
-                                                        WHEN UserProfile.gender = 0
-                                                            THEN '/img/default_avatar_f.svg'
-                                                            ELSE '/img/default_avatar_m.svg'
-                                                        END
-                                                    ELSE concat('/',UserProfile.image)
-                                                END";
-        $data = $user->find('first', [
-            'conditions' => ['User.id' => $userId]
-        ]);
-        
-        $myImageSrc = $data['UserProfile']['image'];
+    public function getUserPic($id) {
+        $user = TableRegistry::get('Users')->get($id);
+        $myImageSrc = $user->profile_image;
         return $myImageSrc;
     }
     

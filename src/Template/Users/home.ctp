@@ -7,7 +7,7 @@
     if(isset($data)) {
         foreach ($data as $key => $value) {
             $gender = $value['user']->gender;
-            $profilePic = $value['user']->image;
+            $profilePic = $value['user']->profile_image;
             $postAgo = $value['post_ago'];
             $postId = $value['id'];
             $postUserId = $value['user_id'];
@@ -32,7 +32,7 @@
     
             $article .= "<div class='post-details col-sm-10'>
                             <div class='row'>";
-            $article .=         "<div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $postUserId])."'>"
+            $article .=         "<div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', $postUserId])."'>"
                                     .$postFullName.
                                 "</a></div>
                                 <div class='post-ago'>
@@ -63,7 +63,7 @@
         
                                 $sharePost .= "<div class='post-details col-sm-10'>
                                                     <div class='row'>
-                                                        <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $sharedPost['user_id']])."'>"
+                                                        <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', $sharedPost['user_id']])."'>"
                                                             .$sharedFullName.
                                                         "</a></div>
                                                         <div class='post-ago'>

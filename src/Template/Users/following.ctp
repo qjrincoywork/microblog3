@@ -1,7 +1,4 @@
 <?php
-    $paginator = $this->Paginator;
-?>
-<?php
     if(!empty($data)) {
         $user = "<div class='container pt-4'>";
         foreach ($data as $following) {
@@ -17,7 +14,7 @@
                                     <img src='".$profilePic."'class='mx-auto'>
                                 </div>
                                 <div class='row col-sm-11'>
-                                    <div class='post-user col-sm-6 mt-3'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $following->id])."'>
+                                    <div class='post-user col-sm-6 mt-3'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', $following->id])."'>
                                     $fullname
                                     </a></div>";
                         if(!$me){
@@ -40,6 +37,15 @@
         $user .=     "</div>";
         echo $user;
 
+        $paginator = $this->Paginator;
+        $paginator->setTemplates([
+            'number' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
+            'nextActive' => '<a class="fa fa-arrow-right pl-3" title="next" href="{{url}}"> {{text}} </a>',
+            'prevActive' => '<a class="fa fa-arrow-left pl-3" title="previous" href="{{url}}"> {{text}} </a>',
+            'first' => '<a class="fa fa-fast-backward pl-3" title="first" href="{{url}}"> {{text}} </a>',
+            'last' => '<a class="fa fa-fast-forward pl-3" title="last" href="{{url}}"> {{text}} </a>',
+            'current' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
+        ]);
         echo "<nav class='paging'>";
         echo $paginator->First('First');
         echo "  ";

@@ -20,12 +20,12 @@ var fxAuth = {
         }
     },
     'displayFormErrorMessages': function(jsonError) {
-        $.each(jsonError.error, function(fieldName, message){
+        $.each(jsonError.errors, function(fieldName, message){
             $("[id="+fieldName+"]").addClass('is-invalid');
             
             if (message.length == 1) {
                 $("[id="+fieldName+"]").nextAll(".help-block").remove();
-                $("[id="+fieldName+"]").after("<span class='help-block'>" + message + "</span>")
+                $("[id="+fieldName+"]").after("<span class='help-block'>" + message[0] + "</span>")
             } else {
                 for (i = 0; i < message.length - 1; i++) {
                     $("[id="+fieldName+"]").nextAll(".help-block").fadeOut();
@@ -45,8 +45,8 @@ var fxAuth = {
 
 $(function () {
     fxAuth.UIHelper();
-    $("body").on("click", ".register_user", function (event) {
-
+    $("body").on("click", ".register_user, .login_user", function (event) {
+        
         event.preventDefault();
         event.stopPropagation();
         var form = $(this).closest("form").not(".form-login"),
@@ -54,6 +54,7 @@ $(function () {
             className = $(this).attr("class").split(" ")[0],
             url = $(this).attr("href"),
             modal = false,
+            csrfToken = $('meta[name="csrf-token"]').attr('content'),
             me = this,
             fd = new FormData();
 
@@ -72,6 +73,9 @@ $(function () {
                 type: "post",
                 url: action,
                 data: fd,
+                headers: {
+                    "X-CSRF-Token": csrfToken
+                },
                 cache: false,
                 processData: false,
                 contentType: false
@@ -79,19 +83,28 @@ $(function () {
         }
 
         posting.done(function (data) {
+            console.log(data);
             if(data.success){
-                fx.displayNotify("User", 
-                                 "Register Successful, your activation link has been sent to your email.", 
-                                 "success");
-                setTimeout(function () {
-                    location.reload()
-                }, 3000);
-            } else {
-                result = $.parseJSON(data);
-                if (result.error) {
-                    fxAuth.displayFormErrorMessages(result, form);
+                if(className == 'register_user') {
+                    fx.displayNotify("User", 
+                                     "Register Successful, your activation link has been sent to your email.", 
+                                     "success");
+                    setTimeout(function () {
+                        location.reload()
+                    }, 3000);
                 } else {
-                    fx.displayNotify("Auth", result, "danger");
+                    // location.reload('/users/home');
+                    window.location = '/users/home';
+                }
+            } else {
+                if(className == 'register_user') {
+                    if (data.errors) {
+                        fxAuth.displayFormErrorMessages(data, form);
+                    } else {
+                        fx.displayNotify("User", "Registration failed.", "danger");
+                    }
+                } else {
+                    fx.displayNotify("User", data.errors, "danger");
                 }
             }
         })

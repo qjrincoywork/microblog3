@@ -22,6 +22,7 @@
                         'username' => [
                             'placeholder' => "Enter username ...", 
                             'required' => false,
+                            'id' => 'username',
                             'label'=>['text'=>'Username',
                                       'for' => 'username',
                                       'class'=>'col-form-label'],
@@ -30,6 +31,7 @@
                         'password' => [
                             'placeholder' => "Enter password ...", 
                             'required' => false,
+                            'id' => 'password',
                             'label'=>['text'=>'Password',
                                       'for' => 'password',
                                       'class'=>'col-form-label'],
@@ -38,6 +40,7 @@
                         'confirm_password' => [
                             'type'=>'password', 
                             'required' => false,
+                            'id' => 'confirm_password',
                             'placeholder' => "Confirm Password ...",
                             'label'=>['text'=>'Confirm Password',
                                       'for' => 'confirm_password',
@@ -46,6 +49,7 @@
                         ],
                         'gender' => [
                             'required' => false,
+                            'id' => 'gender',
                             'options' => $options,
                             'label'=>['text'=>'Gender',
                                       'for' => 'gender',
@@ -53,37 +57,6 @@
                             'class' => ($this->Form->isFieldError('gender')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
                         ],
                     ]);
-                    // echo $this->Form->control('User.username',[
-                    //                         'class' => ($this->Form->isFieldError('username')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm',
-                    //                         'placeholder' => 'Enter username ...',
-                    //                         'id' => 'username',
-                    //                         'label'=>['text'=>'Username',
-                    //                                 'for' => 'username',
-                    //                                 'class'=>'col-form-label']
-                    // ]);
-                    // echo $this->Form->control('User.password',
-                    //                     ['class' => 'form-control form-control-sm',
-                    //                     'placeholder' => 'Enter password ...',
-                    //                     'id' => 'password',
-                    //                         'label'=>['text'=>'Password',
-                    //                                 'for' => 'password',
-                    //                                 'class'=>'col-form-label']]);
-                    // echo $this->Form->control('User.confirm_password',
-                    //                     ['class' => 'form-control form-control-sm',
-                    //                     'type'=>'password',
-                    //                     'placeholder' => 'Enter Confirm Password ...',
-                    //                     'id' => 'confirm_password',
-                    //                         'label'=>['text'=>'Confirm Password',
-                    //                                 'for' => 'confirm_password',
-                    //                                 'class'=>'col-form-label']]);
-                    // echo $this->Form->control('UserProfile.gender',
-                    //                         ['options' => $options,
-                    //                         'id' => 'gender',
-                    //                             'class' => 'form-control form-control-sm',
-                    //                             'label'=>['text'=>'Gender',
-                    //                                 'for' => 'gender',
-                    //                                 'class'=>'col-form-label']]
-                    //                     );
                     ?>
                 </div>
                 
@@ -94,6 +67,7 @@
                     'first_name' => [
                         'placeholder' => "Enter first name ...",
                         'required' => false,
+                        'id' => 'first_name',
                         'label'=>['text'=>'First name',
                                   'for' => 'first_name',
                                   'class'=>'col-form-label'],
@@ -102,6 +76,7 @@
                     'last_name' => [
                         'placeholder' => "Enter last name ...",
                         'required' => false,
+                        'id' => 'last_name',
                         'label'=>['text'=>'Last Name',
                                   'for' => 'last_name',
                                   'class'=>'col-form-label'],
@@ -110,6 +85,7 @@
                     'middle_name' => [
                         'placeholder' => "Enter middle Name ...",
                         'required' => false,
+                        'id' => 'middle_name',
                         'label'=>['text'=>'Middle Name',
                                   'for' => 'middle_name',
                                   'class'=>'col-form-label'],
@@ -118,40 +94,13 @@
                     'suffix' => [
                         'placeholder' => "Enter suffix ...",
                         'required' => false,
+                        'id' => 'suffix',
                         'label'=>['text'=>'Suffix',
                                   'for' => 'suffix',
                                   'class'=>'col-form-label'],
                         'class' => ($this->Form->isFieldError('suffix')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm'
                     ],
                 ]);
-                /* echo $this->Form->control('UserProfile.first_name',
-                                        ['class' => 'form-control form-control-sm',
-                                        'placeholder' => 'Enter first name ...',
-                                        'id' => 'first_name',
-                                            'label'=>['text'=>'First Name',
-                                                    'for' => 'first_name',
-                                                    'class'=>'col-form-label']]);
-                    echo $this->Form->control('UserProfile.last_name',
-                                        ['class' => 'form-control form-control-sm',
-                                        'placeholder' => 'Enter last name ...',
-                                        'id' => 'last_name',
-                                            'label'=>['text'=>'Last name',
-                                                    'for' => 'last_name',
-                                                    'class'=>'col-form-label']]);
-                    echo $this->Form->control('UserProfile.middle_name',
-                                        ['class' => 'form-control form-control-sm',
-                                        'placeholder' => 'Enter middle name ...',
-                                        'id' => 'middle_name',
-                                            'label'=>['text'=>'Middle Name',
-                                                    'for' => 'middle_name',
-                                                    'class'=>'col-form-label']]);
-                    echo $this->Form->control('UserProfile.suffix',
-                                        ['class' => 'form-control form-control-sm',
-                                        'placeholder' => 'Enter suffix ...',
-                                        'id' => 'suffix',
-                                            'label'=>['text'=>'Suffix',
-                                                    'for' => 'suffix',
-                                                    'class'=>'col-form-label']]); */
                 ?>
                 </div>
                 

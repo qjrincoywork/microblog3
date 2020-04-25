@@ -5,6 +5,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Http\Session;
 
 /**
  * Posts Model
@@ -53,6 +54,12 @@ class PostsTable extends Table
         $this->hasMany('Posts', [
             'foreignKey' => 'post_id',
         ]);
+        $this->hasMany('Comments', [
+            'foreignKey' => 'post_id',
+        ]);
+        $this->hasMany('Likes', [
+            'foreignKey' => 'post_id',
+        ]);
     }
 
     /**
@@ -64,14 +71,13 @@ class PostsTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            /* ->add('id', 'custom', [
-                'rule' => function ($value, $context) {
-                    pr($myId);
-                    die('model');
-                    return true;
-                },
-                'message' => 'Unable to process action.',
-            ]) */
+            ->add('id', [
+                'isMine' => [
+                    'rule' => 'isMine',
+                    'provider' => 'table',
+                    'message' => __("Unable to process action.")
+                ]
+            ])
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
 
@@ -84,7 +90,6 @@ class PostsTable extends Table
         $validator
             ->add('image', [
                 'imageType' => [
-                    // 'rule' => ['extension', ['gif', 'jpeg', 'png', 'jpg']], // default  ['gif', 'jpeg', 'png', 'jpg']
                     'rule' => 'imageType',
                     'provider' => 'table',
                     'allowEmpty' => true,
@@ -117,6 +122,20 @@ class PostsTable extends Table
         return $rules;
     }
 
+    public function isMine($value, $context) {
+        $session = new Session();
+        $userId = $session->read('Auth.User.id');
+        $data = $this->find('all', [
+            'conditions' => ['Posts.id' => $context['data']['id'], 'Posts.user_id' => $userId]
+        ])->first();
+        
+        if($data) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     public function imageType($value, $context)
     {
         if($context['data']['image'] != 'undefined' && isset($context['data']['image']['type'])) {

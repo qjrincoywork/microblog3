@@ -3,15 +3,12 @@
 <?php
     $id = $myId;
     $userId = $profile->id;
-    
     $profilePic = $profile->profile_image;
-    
     $profileFullName = $profile->full_name;
 ?>
 <div id="profile-post-container">
     <?php
         if(isset($data)) {
-            $paginator = $this->Paginator;
             $article = '';
             foreach ($data as $key => $value) {
                 $profilePic = $value->user->profile_image;
@@ -28,8 +25,8 @@
                 $commentCount = $this->System->reactionCount($postId, 'Comments');
                 $shareCount = $this->System->reactionCount($postId, 'Posts');
                 
-                $classListener = $value['Post']['deleted'] ? 'restore_post fas fa-recycle' : 'delete_post fa fa-trash';
-                $title = $value['Post']['deleted'] ? 'Restore' : 'Delete';
+                $classListener = $value->deleted ? 'restore_post fas fa-recycle' : 'delete_post fa fa-trash';
+                $title = $value->deleted ? 'Restore' : 'Delete';
                 
                 $article .= "<div class='post-container border'>";
                 $article .= "   <div class='row'>
@@ -42,10 +39,10 @@
                             if($myPost) {
                             $article .= "<div class='system-action-buttons col-sm-12'>
                                             <button class='ml-2'>
-                                                <span href='".$this->Url->build(['controller' => 'posts', 'action' => 'edit', 'post_id' => $postId])."' class='edit_post fa fa-edit' data-toggle='tooltip' data-placement='top' title='Edit' type='button'></span> 
+                                                <span href='".$this->Url->build(['controller' => 'posts', 'action' => 'edit', $postId])."' class='edit_post fa fa-edit' data-toggle='tooltip' data-placement='top' title='Edit' type='button'></span> 
                                             </button>
                                             <button class=''>
-                                                <span href='".$this->Url->build(['controller' => 'posts', 'action' => 'delete', 'post_id' => $postId])."' class='".$classListener."' data-toggle='tooltip' data-placement='top' title='".$title."' type='button'></span> 
+                                                <span href='".$this->Url->build(['controller' => 'posts', 'action' => 'delete', $postId])."' class='".$classListener."' data-toggle='tooltip' data-placement='top' title='".$title."' type='button'></span> 
                                             </button>
                                         </div>";
                             }
@@ -67,11 +64,10 @@
                             if($value->post_id) {
                                 $sharedPost =  $this->System->getSharedPost($value->post_id);
                                 if($sharedPost) {
-                                    $sharedFullName =  $this->System->getFullNameById($sharedPost['Post']['user_id']);
-                                    $sharedProfile =  $this->System->getUserPic($sharedPost['Post']['user_id']);
-                                    $sharedProfile = $sharedPost['UserProfile']['image'];
-                                    $sharedPostAgo = $sharedPost['Post']['post_ago'];
-                                    $sharedContent = $sharedPost['Post']['content'];
+                                    $sharedFullName =  $sharedPost->user->full_name;
+                                    $sharedProfile =  $sharedPost->user->profile_image;
+                                    $sharedPostAgo = $sharedPost->post_ago;
+                                    $sharedContent = h($sharedPost->content);
                                     
                                     $sharePost = "<div class='share-post border p-3 m-2'>";
                                     
@@ -82,7 +78,7 @@
     
                                     $sharePost .= "<div class='post-details col-sm-10'>
                                                         <div class='row'>
-                                                            <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $sharedPost['Post']['user_id']])."'>"
+                                                            <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $sharedPost->user_id])."'>"
                                                                 .$sharedFullName.
                                                             "</a></div>
                                                             <div class='post-ago'>
@@ -91,9 +87,9 @@
                                                             <div class='post-content col-sm-12'>
                                                                 <p>".$sharedContent. "<p>
                                                             </div>";
-                                            if($sharedPost['Post']['image']) {
+                                            if($sharedPost->image) {
                                                 $sharePost .=  "<div class='post-image col-sm-12 mb-2'>
-                                                                <img src='/".$sharedPost['Post']['image']."'>
+                                                                <img src='/".$sharedPost->image."'>
                                                             </div>";
                                             }
                                     $sharePost .=      "</div>
@@ -113,16 +109,16 @@
                         </div>";
                 $buttons = "<div class='post-buttons border-top'>
                                 <div class='row'>
-                                    <button href='".$this->Url->build(['controller' => 'comments', 'action' => 'add', 'post_id' => $postId])."' postid='$postId' class='comment_post col-sm-3'>
+                                    <button href='".$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])."' postid='$postId' class='comment_post col-sm-3'>
                                         <span class='" . ($isCommented ? 'fas' : 'far') ." fa-comment' data-toggle='tooltip' data-placement='top' title='Comment'> ". (!empty($commentCount) ? $commentCount : '')."</span>
                                     </button>
                                     <button href='".$this->Url->build(['controller' => 'likes', 'action' => 'add'])."' class='like_post col-sm-3' postid='$postId'>
                                         <span class='" . ($isLiked ? 'fas' : 'far') ." fa-heart' data-toggle='tooltip' data-placement='top' title='Like'> ". (!empty($likeCount) ? $likeCount : '') ."</span>
                                     </button>
-                                    <button href='".$this->Url->build(['controller' => 'posts', 'action' => 'share', 'post_id' => $postId])."' class='share_post col-sm-3' postid='$postId'>
+                                    <button href='".$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])."' class='share_post col-sm-3' postid='$postId'>
                                         <span class='" . ($isShared ? 'fas' : 'far') ." fa-share-square' data-toggle='tooltip' data-placement='top' title='Share'> ". (!empty($shareCount) ? $shareCount : '')  ."</span>
                                     </button>
-                                    <a href='".$this->Url->build(['controller' => 'posts', 'action' => 'view', 'post_id' => $postId])."' class='col-sm-3' postid='$postId'>
+                                    <a href='".$this->Url->build(['controller' => 'posts', 'action' => 'view', $postId])."' class='col-sm-3' postid='$postId'>
                                         <span class='fa fa-eye' data-toggle='tooltip' data-placement='top' title='View post'></span>
                                     </a>
                                 </div>
@@ -132,12 +128,21 @@
             }
             echo $article;
             
+            $paginator = $this->Paginator;
+            $this->Paginator->setTemplates([
+                'number' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
+                'nextActive' => '<a class="fa fa-arrow-right pl-3" title="next" href="{{url}}"> {{text}} </a>',
+                'prevActive' => '<a class="fa fa-arrow-left pl-3" title="previous" href="{{url}}"> {{text}} </a>',
+                'first' => '<a class="fa fa-fast-backward pl-3" title="first" href="{{url}}"> {{text}} </a>',
+                'last' => '<a class="fa fa-fast-forward pl-3" title="last" href="{{url}}"> {{text}} </a>',
+                'current' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
+            ]);
             echo "<nav class='paging'>";
-            echo $paginator->First('First');
+            echo $paginator->First('');
             echo "  ";
             
             if($paginator->hasPrev()) {
-                echo $paginator->prev('Prev');
+                echo $paginator->prev('');
             }
             echo "  ";
             
@@ -145,11 +150,11 @@
             echo "  ";
             
             if($paginator->hasNext()) {
-                echo $paginator->next("Next");
+                echo $paginator->next("");
             }
             echo "  ";
 
-            echo $paginator->last('Last');
+            echo $paginator->last('');
             echo "</nav>";
         } else {
             echo "<span class='container'><h2> No User Found </h2></span>";

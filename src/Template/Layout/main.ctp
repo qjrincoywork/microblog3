@@ -2,6 +2,7 @@
 <html>
     <head>
         <?php echo $this->Html->charset(); ?>
+        <meta name="csrf-token" content="<?=$this->request->getParam('_csrfToken')?>">
         <link rel="icon" href="/img/microMinilogo.png">
         <title>
             <?php echo $this->fetch('title'); ?>
@@ -15,8 +16,8 @@
         ?>
     </head>
 <body>
-	<?= $this->element('sidebar'); ?>
-	
+    <?= $this->element('sidebar'); ?>
+    
     <div class="page-container" id='pageContainer'>
         <?php echo $this->element('header'); ?>
         <div class='modal fade' tabindex='-1' role='dialog'>

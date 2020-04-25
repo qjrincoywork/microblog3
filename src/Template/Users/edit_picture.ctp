@@ -1,3 +1,13 @@
+<?php 
+    $myTemplates = [
+        'legend' => false,
+        'inputContainer' => '<div class="form-group">{{content}}</div>',
+        'inputContainerError' => '<div class="input {{type}}{{required}} error">{{content}}{{error}}</div>',
+        'error' => '<span class="help-block">{{content}}</span>',
+    ];
+    $this->Form->setTemplates($myTemplates);
+?>
+
 <div class="card-body mt-2">
     <?= $this->Form->create($user, ['enctype' => 'multipart/form-data']); ?>
                             

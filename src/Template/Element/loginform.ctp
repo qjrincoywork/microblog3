@@ -21,6 +21,6 @@
                             'label'=>['text'=>'Password',
                                     'for' => 'password',
                                     'class'=>'col-form-label']]);?>
-    <?= $this->Form->button(__('Login'),['class'=>'auth-btn form-control btn btn-secondary mt-3']); ?>
+    <?= $this->Form->button(__('Login'),['class'=>'login_user auth-btn form-control btn btn-secondary mt-3']); ?>
     <?= $this->Form->end(); ?>
 </div>

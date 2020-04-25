@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
+use Cake\Http\Session;
 
 /**
  * User Entity
@@ -40,41 +41,54 @@ class User extends Entity
 
     protected function _getFullName()
     {
-        $middleInitial = empty($this->_properties['middle_name']) ? '' : substr($this->_properties['middle_name'], 0, 1).". ";
-        $fullName = ucwords($this->_properties['first_name'].' '.$middleInitial.$this->_properties['last_name'].' '.$this->_properties['suffix']);
-        
-        return $fullName;
+        $session = new Session;
+        $id = $session->read('Auth.User.id');
+        if($id) {
+            $middleInitial = empty($this->_properties['middle_name']) ? '' : substr($this->_properties['middle_name'], 0, 1).". ";
+            $fullName = ucwords($this->_properties['first_name'].' '.$middleInitial.$this->_properties['last_name'].' '.$this->_properties['suffix']);
+            
+            return $fullName;
+        }
     }
     
     protected function _getProfileImage()
     {
-        if(!$this->_properties['image']) {
-            if($this->_properties['gender']) {
-                $image = '/img/default_avatar_m.svg';
+        $session = new Session;
+        $id = $session->read('Auth.User.id');
+        if($id) {
+            if(!$this->_properties['image']) {
+                if($this->_properties['gender']) {
+                    $image = '/img/default_avatar_m.svg';
+                } else {
+                    $image = '/img/default_avatar_f.svg';
+                }
             } else {
-                $image = '/img/default_avatar_f.svg';
+                $image = '/'.$this->_properties['image'];
             }
-        } else {
-            $image = '/'.$this->_properties['image'];
+            return $image;
         }
-        
-        return $image;
     }
     
     protected function _getJoined()
     {
-        $joined = date(' M Y', strtotime($this->_properties['created']));
-        return $joined;
+        $session = new Session;
+        $id = $session->read('Auth.User.id');
+        if($id) {
+            if(isset($this->_properties['created'])) {
+                $joined = date(' M Y', strtotime($this->_properties['created']));
+                return $joined;
+            }
+        }
     }
-    
-    protected $_hidden = [
-        'password',
-        'token',
-    ];
     
     protected $_accessible = [
         '*' => true,
         'id' => false
+    ];
+    
+    protected $_hidden = [
+        'password',
+        'token',
     ];
     
     protected function _setPassword($password) {

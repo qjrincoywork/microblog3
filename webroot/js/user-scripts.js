@@ -52,6 +52,7 @@ $(function () {
             formId = form.attr('id'),
             className = $(this).attr("class").split(" ")[0],
             url = $(this).attr("href"),
+            csrfToken = $('meta[name="csrf-token"]').attr('content'),
             modal = false,
             me = this,
             fd = new FormData();
@@ -72,10 +73,25 @@ $(function () {
                 break;
             case 'like_post':
                 var postId = $(this).attr("postid");
-                data = {
+                fd.append("_method", "POST");
+                fd.append("_csrfToken", csrfToken);
+                fd.append("post_id", postId);
+                
+                posting = $.ajax({
+                    type: "post",
+                    url: url,
+                    data: fd,
+                    headers: {
+                        "X-CSRF-Token": csrfToken
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false
+                });
+                /* data = {
                     post_id: postId 
                 };
-                posting = $.post(url, data);
+                posting = $.post(url, data); */
                 break;
             case 'follow_user':
             case 'unfollow_user':
@@ -104,6 +120,9 @@ $(function () {
                         type: "post",
                         url: action,
                         data: fd,
+                        headers: {
+                            "X-CSRF-Token": csrfToken
+                        },
                         contentType: false,
                         processData: false
                     });
@@ -244,6 +263,10 @@ $(function () {
     $('#search').on('keypress',function(e) {
         if(e.which == 13) {
             var value = $(this).val(),
+                /* form = $(this).closest("form").not(".form-group"),
+                action = form.attr("action"), */
+                csrfToken = $('meta[name="csrf-token"]').attr('content'),
+                fd = new FormData(),
                 url = $(this).attr("href");
             if(!value) {
                 fx.displayNotify(
@@ -252,9 +275,24 @@ $(function () {
                     "danger"
                 );
             } else {
+                fd.append("_csrfToken", csrfToken);
+                fd.append("_method", "POST");
+                fd.append("user", value);
                 
-                posting = $.post(url, {user: value});
+                posting = $.ajax({
+                    type: "post",
+                    url: url,
+                    data: fd,
+                    headers: {
+                        "X-CSRF-Token": csrfToken
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false
+                });
+                // posting = $.post(url, {user: value});
                 posting.done(function (data) {
+                    console.log(data);
                     $("#mainContent").html(data);
                 })
             }

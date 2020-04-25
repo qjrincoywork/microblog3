@@ -69,16 +69,17 @@ class PostsController extends AppController
         $data = $this->Posts->get($id, [
             'contain' => ['Users'],
         ]);
-        // $data = $this->Posts->find($id)->first();
-        $this->set('data', $data);
+        
         $this->paginate = [
             'limit' => 3,
+            'contain' => ['Users'],
             'conditions' => ['Comments.post_id' => $id, 'Comments.deleted' => 0],
             'order' => [
                 'Comments.created'
             ]
         ];
-        $this->set('comments', $this->paginate('Comments'));
+        $comments = $this->paginate('Comments');
+        $this->set(compact('data', 'comments'));
         $this->set('title', 'User Post');
     }
 
@@ -179,24 +180,57 @@ class PostsController extends AppController
         }
         $this->set(compact('post'));
     }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Post id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $post = $this->Posts->get($id);
-        if ($this->Posts->delete($post)) {
-            $this->Flash->success(__('The post has been deleted.'));
-        } else {
-            $this->Flash->error(__('The post could not be deleted. Please, try again.'));
+    
+    public function share($id) {
+        $post = $this->Posts->newEntity();
+        $datum['success'] = false;
+        if($this->request->is('post')) {
+            $postData = $this->request->getData();
+            // $postData['created'] = date('Y-m-d H:i:s');
+            $userId = $this->request->getSession()->read('Auth.User.id');
+            $post = $this->Posts->patchEntity($post, $postData);
+            $post->user_id = $userId;
+            
+            if(!$post->getErrors()) {
+                if ($this->Posts->save($post)) {
+                    $datum['success'] = true;
+                }
+            } else {
+                $errors = $this->formErrors($post);
+                $datum['errors'] = $errors;
+            }
+            
+            return $this->jsonResponse($datum);
         }
+        $data = $this->Posts->get($id, [
+            'contain' => ['Users'],
+        ]);
+        $this->set(compact('data', 'post'));
+    }
 
-        return $this->redirect(['action' => 'index']);
+    public function delete($id)
+    {
+        $post = $this->Posts->get($id);
+        if($this->request->is(['put', 'patch'])) {
+            $datum['success'] = false;
+            $postData = $this->request->getData();
+            $userId = $this->request->getSession()->read('Auth.User.id');
+            $post = $this->Posts->patchEntity($post, $postData);
+            $post->user_id = $userId;
+            
+            if(!$post->getErrors()) {
+                if ($this->Posts->save($post)) {
+                    $datum['success'] = true;
+                }
+            } else {
+                $errors = $this->formErrors($post);
+                $datum['errors'] = $errors;
+            }
+            
+            return $this->jsonResponse($datum);
+            
+            return $this->jsonResponse($datum);
+        }
+        $this->set(compact('post'));
     }
 }

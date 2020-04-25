@@ -1,7 +1,7 @@
 <?php
     $here = $this->request->getAttribute("here");
     $myPic = $this->System->getUserPic($myId);
-    $myFullName = $this->request->getSession()->read('Auth.User.full_name');
+    $myFullName = $this->System->getFullNameById($myId);
     $email = $this->request->getSession()->read('Auth.User.email');
 ?>
 <header class="header-desktop">
@@ -10,6 +10,7 @@
             <div class="header-wrap">
                 <div class="search">
                   <?php
+                  
                     echo $this->Form->control('search', array(
                       'href' => $this->Url->build('/users/search'),
                       'label' => false,

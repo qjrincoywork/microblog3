@@ -15,17 +15,12 @@ use Cake\ORM\TableRegistry;
  */
 class UsersController extends AppController
 {
-    /* public $paginate = [
-        'order' => [
-            'Posts.created DESC'
-        ],
-        'limit' => 4
-    ]; */
-
     public function initialize()
     {
         parent::initialize();
         $this->loadModel('Posts');
+        $this->loadModel('Follows');
+        // $this->loadComponent('Csrf');
         // $this->loadComponent('Security', ['blackHoleCallback' => 'blackHole']);
     }
 
@@ -33,8 +28,10 @@ class UsersController extends AppController
     {
         parent::beforeFilter($event);
         // $this->Auth->allow(['register', 'activation', 'logout', 'testEmail']);
+        // $this->getEventManager()->off($this->Csrf);
         $this->viewBuilder()->setLayout('main');
         // $this->Security->requireSecure();
+        
         if($this->request->is('ajax')) {
             $this->viewBuilder()->setLayout(false);
         }
@@ -68,18 +65,19 @@ class UsersController extends AppController
     public function home()
     {
         $id = $this->request->getSession()->read('Auth.User.id');
-        /* $ids = $this->Follow->find('list', [
-                    'fields' => ['Follow.following_id'],
-                    'conditions' => ['Follow.user_id' => $userId, 'Follow.deleted' => 0]
-        ]); */
+        $following = $this->Follows->find()
+                             ->select('Follows.following_id')
+                             ->where(['Follows.user_id' => $id, 'Follows.deleted' => 0])
+                             ->toArray();
+        $ids = [];
+        foreach($following as $key => $val) {
+            $ids[] = $val['following_id'];
+        }
         $ids[] = $id;
+
         $data = $this->getPosts(['Posts.deleted' => 0, 'Posts.user_id IN' => $ids]);
-        // pr($data);
-        // die('controller');
         $post = $this->Posts->newEntity();
         $this->set(compact('post', 'data'));
-        // $this->set('data', $data);
-        // $this->set(compact('users'));
     }
 
     public function login()
@@ -92,10 +90,12 @@ class UsersController extends AppController
                     $this->Flash->error('Please activate your account first');
                 } else {
                     $this->Auth->setUser($user);
-                    return $this->redirect($this->Auth->redirectUrl("/users/home"));
+                    return $this->jsonResponse(['success' => true]);
+                    // return $this->redirect($this->Auth->redirectUrl("/users/home"));
                 }
             } else {
-                $this->Flash->error('Invalid username or password');
+                return $this->jsonResponse(['errors' => 'Invalid username or password']);
+                // $this->Flash->error('Invalid username or password');
             }
         }
     }
@@ -162,25 +162,39 @@ class UsersController extends AppController
 
     public function register()
     {
-        $this->set('title', 'User Registration');
+        if($this->request->getSession()->read('Auth.User.id')) {
+            return $this->redirect(['action' => 'home']);
+        }
+        
         $this->viewBuilder()->setLayout('default');
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $datum['success'] = false;
+            $postData = $this->request->getData();
             $mytoken = Security::hash(Security::randomBytes(32));
-            $user['token'] = $mytoken;
-
+            $postData['token'] = $mytoken;
+            $user = $this->Users->patchEntity($user, $postData/* , ['validate' => 'Register'] */);
+            // $user['image'] = null;
             if(!$user->getErrors()) {
+                // pr($user);
+                // debug($this->Users->save($user));
+                // die('cont');
                 if ($this->Users->save($user)) {
                     $fullName = $user['last_name'].', '.$user['first_name'].' '.$user['middle_name'];
                     $userName = $user['username'];
                     $to = $user['email'];
                     $this->send_email($userName, $fullName, $to, $mytoken);
                     $this->Flash->success(__('Email has been sent to activate your account.'));
+                    // $datum['success'] = true;
                     return $this->redirect(['action' => 'register']);
                 }
-                $this->Flash->error(__('The user could not be saved. Please, try again.'));
+                // $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            } /* else {
+                $errors = $this->formErrors($user);
+                $datum['errors'] = $errors;
             }
+            
+            return $this->jsonResponse($datum); */
         }
         $this->set('user', $user);
     }
@@ -228,10 +242,11 @@ class UsersController extends AppController
         }
         
         $myId = $this->request->getSession()->read('Auth.User.id');
-        if($myId !== $id) {
-            $conditions = ['Posts.deleted' => 0];
-        } else {
+        
+        if($myId != $id) {
             $conditions = ['Posts.user_id' => $id, 'Posts.deleted' => 0];
+        } else {
+            $conditions = ['Posts.user_id' => $id];
         }
         
         $profile = $this->Users->find('all', [
@@ -245,6 +260,26 @@ class UsersController extends AppController
         $data = $this->getPosts($conditions);
         
         $this->set(compact('data', 'profile'));
+    }
+
+    public function search() {
+        $conditions = [];
+        if(isset($this->request->getData()['user'])){
+            $cond = [];
+            $cond['Users.first_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond['Users.last_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond['Users.email LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond['Users.middle_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond['Users.suffix LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($this->request->getData()['user']) . "%";
+            $conditions['OR'] = $cond;
+
+        }
+        
+        $this->paginate = ['conditions' => [$conditions, 'Users.is_online !=' => 2], 'limit' => 10];
+        $data = $this->paginate($this->Users);
+
+        $this->set(compact('data'));
     }
     
     public function edit() {

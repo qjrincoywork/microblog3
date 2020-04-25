@@ -18,7 +18,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <!DOCTYPE html>
 <html>
 <head>
-    <?= $this->Html->charset() ?>
+        <?= $this->Html->charset() ?>
+        <meta name="csrf-token" content="<?=$this->request->getParam('_csrfToken')?>">
         <link rel="icon" href="/img/microMinilogo.png">
         <title>
             <?php echo $this->fetch('title'); ?>

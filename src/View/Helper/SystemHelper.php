@@ -9,31 +9,19 @@ class SystemHelper extends Helper {
 
     public function getFullNameById($id) {
         $user = TableRegistry::get('Users');
-        $data = $user->findById($id)->first();
+        $data = $user->get($id);
         $middleInitial = empty($data['middle_name']) ? '' : substr($data['middle_name'], 0, 1).". ";
-        
         $fullName = ucwords($data['first_name'].' '.$middleInitial.$data['last_name'].' '.$data['suffix']);
         
         return $fullName;
     }
     
     public function getSharedPost($postId) {
-        $post = new Post();
-        $post->virtualFields['post_ago'] = "CASE
-                                                WHEN Post.created between date_sub(now(), INTERVAL 120 second) and now() 
-                                                    THEN 'Just now'
-                                                WHEN Post.created between date_sub(now(), INTERVAL 60 minute) and now() 
-                                                    THEN concat(minute(TIMEDIFF(now(), Post.created)), ' minutes ago')
-                                                WHEN datediff(now(), Post.created) = 1 
-                                                    THEN 'Yesterday'
-                                                WHEN Post.created between date_sub(now(), INTERVAL 24 hour) and now() 
-                                                    THEN concat(hour(TIMEDIFF(NOW(), Post.created)), ' hours ago')
-                                                ELSE concat(datediff(now(), Post.created),' days ago')
-                                            END";
-        $data = $post->find('first', [
-            'conditions' => ['Post.id' => $postId, 'Post.deleted' => 0]
-        ]);
-        
+        $post = TableRegistry::get('Posts');
+        $data = $post->find('all', [
+            'contain' => ['Users'],
+            'conditions' => ['Posts.deleted' => 0,'Posts.id' => $postId]
+        ])->first();
         return $data;
     }
     
@@ -54,13 +42,14 @@ class SystemHelper extends Helper {
     }
     
     public function getDateJoined($userId) {
-        $user = new User();
-        $data = $user->find('first', [
+        $user = TableRegistry::get('Users');
+        // $user = new User();
+        $data = $user->find('all', [
             'fields' => ['User.created'],
             'conditions' => ['User.id' => $userId]
-        ]);
+        ])->first();
         
-        $joined = date(' M Y', strtotime($data['User']['created']));
+        $joined = date(' M Y', strtotime($data->created));
         return $joined;
     }
     
@@ -82,13 +71,13 @@ class SystemHelper extends Helper {
 
     public function isFollowing($myId, $followingId) {
         $isFollowing = false;
-        $follow = new Follow();
+        $follow = TableRegistry::get('Follows');
 
-        $data = $follow->find('first', [
-            'conditions' => ['Follow.user_id' => $myId, 'Follow.following_id' => $followingId]
-        ]);
+        $data = $follow->find('all', [
+            'conditions' => ['Follows.user_id' => $myId, 'Follows.following_id' => $followingId]
+        ])->first();
         
-        if(!empty($data) && !$data['Follow']['deleted']) {
+        if(!empty($data) && !$data['deleted']) {
             $isFollowing = true;
         }
         

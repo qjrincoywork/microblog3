@@ -141,22 +141,6 @@ class UsersTable extends Table
             ->requirePresence('gender', 'create')
             ->notEmptyString('gender', 'This field is required.');
             
-        /* $validator
-            ->scalar('token')
-            ->maxLength('token', 255)
-            ->requirePresence('token', 'create')
-            ->notEmptyString('token');
-
-        $validator
-            ->integer('is_online')
-            ->requirePresence('is_online', 'create')
-            ->notEmptyString('is_online');
-
-        $validator
-            ->integer('deleted')
-            ->requirePresence('deleted', 'create')
-            ->notEmptyString('deleted'); */
-
         return $validator;
     }
 
@@ -233,22 +217,6 @@ class UsersTable extends Table
             ->requirePresence('gender', 'create')
             ->notEmptyString('gender', 'This field is required.');
             
-        /* $validator
-            ->scalar('token')
-            ->maxLength('token', 255)
-            ->requirePresence('token', 'create')
-            ->notEmptyString('token');
-
-        $validator
-            ->integer('is_online')
-            ->requirePresence('is_online', 'create')
-            ->notEmptyString('is_online');
-
-        $validator
-            ->integer('deleted')
-            ->requirePresence('deleted', 'create')
-            ->notEmptyString('deleted'); */
-
         return $validator;
     }
 

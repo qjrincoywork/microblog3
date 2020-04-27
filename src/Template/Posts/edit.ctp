@@ -1,12 +1,10 @@
 <?php
-    $content = $post['content'];
-    $id = $post['id'];
-    $postAgo = $post['post_ago'];
-    $profPic = $post['user']->image;
+    $content = $post->content;
+    $postAgo = $post->post_ago;
+    $profPic = $post->user->profile_image;
     $userId = $myId;
-    $postImage = !empty($post['image']) ? "/".$post['image'] : '';
-    // $fullName = $this->System->getFullNameById($userId);
-    $fullName = $post['user']->full_name;
+    $postImage = !empty($post->image) ? "/".$post->image : '';
+    $fullName = $post->user->full_name;
 ?>
 <?php 
     $myTemplates = [

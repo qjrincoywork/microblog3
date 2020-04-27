@@ -72,10 +72,8 @@ $(function () {
                 return false;
                 break;
             case 'like_post':
-                var postId = $(this).attr("postid");
                 fd.append("_method", "POST");
                 fd.append("_csrfToken", csrfToken);
-                fd.append("post_id", postId);
                 
                 posting = $.ajax({
                     type: "post",
@@ -88,18 +86,23 @@ $(function () {
                     processData: false,
                     contentType: false
                 });
-                /* data = {
-                    post_id: postId 
-                };
-                posting = $.post(url, data); */
                 break;
             case 'follow_user':
             case 'unfollow_user':
-                var followingId = $(this).attr("followingId");
-                data = {
-                    following_id: followingId
-                };
-                posting = $.post(url, data);
+                fd.append("_method", "POST");
+                fd.append("_csrfToken", csrfToken);
+                
+                posting = $.ajax({
+                    type: "post",
+                    url: url,
+                    data: fd,
+                    headers: {
+                        "X-CSRF-Token": csrfToken
+                    },
+                    cache: false,
+                    processData: false,
+                    contentType: false
+                });
                 break;
             default:
                 if (action == undefined) {
@@ -115,16 +118,17 @@ $(function () {
                             fd.append($(this).attr("name"), $(this)[0].files[0]);
                         }
                     });
-                    
+                    console.log
                     posting = $.ajax({
                         type: "post",
                         url: action,
                         data: fd,
                         headers: {
-                            "X-CSRF-Token": csrfToken
+                            "X-CSRF-Token": $('[name="_csrfToken"]').val()
                         },
-                        contentType: false,
-                        processData: false
+                        cache: false,
+                        processData: false,
+                        contentType: false
                     });
                 }
                 break;
@@ -222,6 +226,8 @@ $(function () {
                 } else {
                     if(data.errors) {
                         fxUser.displayFormErrorMessages(data.errors, form);
+                    } else {
+                        fx.displayNotify("", data.error, "danger");
                     }
                 }
             }
@@ -263,8 +269,6 @@ $(function () {
     $('#search').on('keypress',function(e) {
         if(e.which == 13) {
             var value = $(this).val(),
-                /* form = $(this).closest("form").not(".form-group"),
-                action = form.attr("action"), */
                 csrfToken = $('meta[name="csrf-token"]').attr('content'),
                 fd = new FormData(),
                 url = $(this).attr("href");
@@ -290,9 +294,8 @@ $(function () {
                     processData: false,
                     contentType: false
                 });
-                // posting = $.post(url, {user: value});
+                
                 posting.done(function (data) {
-                    console.log(data);
                     $("#mainContent").html(data);
                 })
             }

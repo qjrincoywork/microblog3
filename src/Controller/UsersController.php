@@ -173,12 +173,9 @@ class UsersController extends AppController
             $postData = $this->request->getData();
             $mytoken = Security::hash(Security::randomBytes(32));
             $postData['token'] = $mytoken;
-            $user = $this->Users->patchEntity($user, $postData/* , ['validate' => 'Register'] */);
-            // $user['image'] = null;
+            $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Register']);
+            
             if(!$user->getErrors()) {
-                // pr($user);
-                // debug($this->Users->save($user));
-                // die('cont');
                 if ($this->Users->save($user)) {
                     $fullName = $user['last_name'].', '.$user['first_name'].' '.$user['middle_name'];
                     $userName = $user['username'];
@@ -188,13 +185,7 @@ class UsersController extends AppController
                     // $datum['success'] = true;
                     return $this->redirect(['action' => 'register']);
                 }
-                // $this->Flash->error(__('The user could not be saved. Please, try again.'));
-            } /* else {
-                $errors = $this->formErrors($user);
-                $datum['errors'] = $errors;
             }
-            
-            return $this->jsonResponse($datum); */
         }
         $this->set('user', $user);
     }
@@ -226,14 +217,7 @@ class UsersController extends AppController
             $this->redirect(['controller' => 'users', 'action' => 'login']);
         }
     }
-
-    /**
-     * View method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
     public function profile($id)
     {
         $conditions = [];
@@ -309,13 +293,12 @@ class UsersController extends AppController
         $field = key($this->request->getQuery());
         $id = $this->request->getQuery()[$field];
         $data = [];
+        $conditions = ['Follows.'.$field => $id,'Follows.deleted' => 0];
 
         if($field == 'user_id') {
-            $conditions = ['Follows.'.$field => $id];
             $column = 'following_id';
             $message = 'No user following';
         } else {
-            $conditions = ['Follows.'.$field => $id];
             $column = 'user_id';
             $message = "Don't have any follower";
         }
@@ -383,5 +366,58 @@ class UsersController extends AppController
             return $this->jsonResponse($datum);
         }
         $this->set(compact('user'));
+    }
+
+    public function changePassword() {
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($id);
+        
+        if($this->request->is(['put', 'patch'])) {
+            $datum['success'] = false;
+            $postData = $this->request->getData();
+            $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Passwords']);
+            
+            if(!$user->getErrors()) {
+                if ($this->Users->save($user)) {
+                    $datum['success'] = true;
+                }
+            } else {
+                $errors = $this->formErrors($user);
+                $datum['errors'] = $errors;
+            }
+            
+            return $this->jsonResponse($datum);
+        }
+        unset($user['password']);
+        $this->set(compact('user'));
+    }
+
+    public function follow($followingId) {
+        $datum['success'] = false;
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($followingId);
+        if($user) {
+            $exists = $this->Follows->find('all', [
+                'conditions' => [
+                        ['Follows.following_id' => $followingId,
+                         'Follows.user_id' => $id]
+                ]
+            ])->first();
+            
+            if(!$exists) {
+                $follow = $this->Follows->newEntity();
+                $follow->user_id = $id;
+                $follow->following_id = $followingId;
+                $this->Follows->save($follow);
+                $datum['success'] = true;
+            } else {
+                $status = $exists->deleted ? 0 : 1;
+                $exists->deleted = $status;
+                $this->Follows->save($exists);
+                $datum['success'] = true;
+            }
+        }
+        
+        return $this->jsonResponse($datum);
     }
 }

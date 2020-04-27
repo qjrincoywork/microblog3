@@ -88,21 +88,6 @@ class UsersTable extends Table
             ->maxLength('confirm_password', 255)
             ->requirePresence('confirm_password', ['create', 'update'])
             ->notEmptyString('confirm_password', 'This field is required.');
-
-        /* $validator
-            ->add('old_password', 'custom', [
-                'rule' => function ($value, $context) {
-                    if ($context['data']['password'] !== $value){
-                        return false;
-                    }
-                    return true;
-                },
-                'message' => 'Does not match with password.',
-            ])        
-            ->scalar('old_password')
-            ->maxLength('old_password', 255)
-            ->requirePresence('old_password', 'update')
-            ->notEmptyString('old_password', 'This field is required.'); */
             
         $validator
             ->email('email')
@@ -298,6 +283,24 @@ class UsersTable extends Table
             ->maxLength('confirm_password', 255)
             ->requirePresence('confirm_password', ['create', 'update'])
             ->notEmptyString('confirm_password', 'This field is required.');
+
+        $validator
+            ->add('old_password', 'custom', [
+                'rule' => function ($value, $context) {
+                    $user = $this->get($context['data']['id']);
+                    $same = password_verify($value, $user->password);
+                    
+                    if (!$same){
+                        return false;
+                    }
+                    return true;
+                },
+                'message' => 'Does not match with old password.',
+            ])
+            ->scalar('old_password')
+            ->maxLength('old_password', 255)
+            ->requirePresence('old_password', 'update')
+            ->notEmptyString('old_password', 'This field is required.');
 
         return $validator;
     }

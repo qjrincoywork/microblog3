@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 
 class LikesController extends AppController
 {
@@ -19,30 +20,30 @@ class LikesController extends AppController
         }
     }
     
-    public function add() {
-        die('hits likes Controller');
+    public function add($postId) {
         $datum['success'] = false;
-        $postData = $this->request->getData();
-        pr($postData);
-        /* $id = $this->request->getSession()->read('Auth.User.id');
-        $like['Like']['post_id'] = $this->request->data['post_id'];
-        $like['Like']['user_id'] = $id;
+        $id = $this->request->getSession()->read('Auth.User.id');
         
-        $exists = $this->Like->find('first', [
+        $exists = $this->Likes->find('all', [
             'conditions' => [
-                    ['Like.post_id' => $like['Like']['post_id'],
-                        'Like.user_id' => $like['Like']['user_id']
+                    ['Likes.post_id' => $postId,
+                     'Likes.user_id' => $id
                 ]
             ]
-        ]);
+        ])->first();
         
         if(!$exists) {
-            $this->Like->save($like);
+            $datum['success'] = true;
+            $like = $this->Likes->newEntity();
+            $like->post_id = $postId;
+            $like->user_id = $id;
+            $this->Likes->save($like);
         } else {
-            $status = $exists['Like']['deleted'] ? 0 : 1;
-            $exists['Like']['deleted'] = $status;
-            $this->Like->save($exists);
-        } */
+            $datum['success'] = true;
+            $status = $exists->deleted ? 0 : 1;
+            $exists->deleted = $status;
+            $this->Likes->save($exists);
+        }
         
         return $this->jsonResponse($datum);
     }

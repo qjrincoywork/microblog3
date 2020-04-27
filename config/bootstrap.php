@@ -89,7 +89,7 @@ try {
  */
 // Configure::write('debug', 2);
 if (Configure::read('debug')) {
-    Configure::write('DebugKit.forceEnable', TRUE);
+    // Configure::write('DebugKit.forceEnable', TRUE);
     // Plugin::addPlugin('DebugKit', ['bootstrap' => TRUE]);
     Configure::write('Cache._cake_model_.duration', '+2 minutes');
     Configure::write('Cache._cake_core_.duration', '+2 minutes');

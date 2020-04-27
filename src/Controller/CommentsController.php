@@ -106,13 +106,17 @@ class CommentsController extends AppController
             $postData['user_id'] = $id;
             $comment = $this->Comments->patchEntity($comment, $postData);
             
-            if(!$comment->getErrors()) {
+            if($comment->getErrors()) {
+                if(array_key_exists('id', $comment->getErrors())) {
+                    $datum['error'] = $comment->getError('id.isMine');
+                } else {
+                    $errors = $this->formErrors($comment);
+                    $datum['errors'] = $errors;
+                }
+            } else {
                 if ($this->Comments->save($comment)) {
                     $datum['success'] = true;
                 }
-            } else {
-                $errors = $this->formErrors($comment);
-                $datum['errors'] = $errors;
             }
             
             return $this->jsonResponse($datum);
@@ -139,16 +143,20 @@ class CommentsController extends AppController
             $postData = $this->request->getData();
             $postData['deleted'] = 1;
             $postData['user_id'] = $id;
-
+            
             $comment = $this->Comments->patchEntity($comment, $postData, ['validate' => 'Delete']);
             
-            if(!$comment->getErrors()) {
+            if($comment->getErrors()) {
+                if(array_key_exists('id', $comment->getErrors())) {
+                    $datum['error'] = $comment->getError('id.isMine');
+                } else {
+                    $errors = $this->formErrors($comment);
+                    $datum['errors'] = $errors;
+                }
+            } else {
                 if ($this->Comments->save($comment)) {
                     $datum['success'] = true;
                 }
-            } else {
-                $errors = $this->formErrors($comment);
-                $datum['errors'] = $errors;
             }
             
             return $this->jsonResponse($datum);

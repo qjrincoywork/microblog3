@@ -99,13 +99,13 @@
     </div>
     <div class='post-buttons border-top'>
         <div class='row'>
-            <button href='<?=$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])?>' postid='<?=$postId?>' class='comment_post col-sm-4'>
+            <button href='<?=$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])?>' class='comment_post col-sm-4'>
                 <span class='<?= ($isCommented ? 'fas' : 'far') ?> fa-comment' data-toggle='tooltip' data-placement='top' title='Comment'> <?= (!empty($commentCount) ? $commentCount : '') ?></span>
             </button>
-            <button href='<?=$this->Url->build(['controller' => 'likes', 'action' => 'add'])?>' class='like_post col-sm-4' postid='<?=$postId?>'>
+            <button href='<?=$this->Url->build(['controller' => 'likes', 'action' => 'add', $postId])?>' class='like_post col-sm-4'>
                 <span class='<?= ($isLiked ? 'fas' : 'far') ?> fa-heart' data-toggle='tooltip' data-placement='top' title='Like'> <?= (!empty($likeCount) ? $likeCount : '') ?></span>
             </button>
-            <button href='<?=$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])?>' class='share_post col-sm-4' postid='<?=$postId?>'>
+            <button href='<?=$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])?>' class='share_post col-sm-4'>
                 <span class='<?= ($isShared ? 'fas' : 'far') ?> fa-share-square' data-toggle='tooltip' data-placement='top' title='Share'> <?= (!empty($shareCount) ? $shareCount : '') ?></span>
             </button>
         </div>

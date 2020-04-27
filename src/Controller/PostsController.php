@@ -26,14 +26,15 @@ class PostsController extends AppController
         parent::beforeFilter($event);
         // $this->Security->requireSecure();
         $this->viewBuilder()->setLayout('main');
+        // $this->Security->setConfig('unlockedActions', ['edit']);
         if($this->request->is('ajax')) {
             $this->viewBuilder()->setLayout(false);
         }
     }
     
-    public function blackhole($errorType) {
-
-        $errorMap['auth']   = 'form validation error, or a controller/action mismatch error.';
+    // public function blackhole($errorType) {
+    public function blackhole($type/* , SecurityException $exception */) {
+        /* $errorMap['auth']   = 'form validation error, or a controller/action mismatch error.';
         $errorMap['csrf']   = 'CSRF error.';
         $errorMap['get']    = 'HTTP method restriction failure.';
         $errorMap['post']   = $errorMap['get'];
@@ -41,20 +42,16 @@ class PostsController extends AppController
         $errorMap['delete'] = $errorMap['get'];
         $errorMap['secure'] = 'SSL method restriction failure.';
         $errorMap['myMoreValuableErrorType']    = 'My custom and very ' . 
-        'specific reason for the error type.';
-    
-        CakeLog::notice("Request to the '{$this->request->params['action']}' " . 
-                    "endpoint was blackholed by SecurityComponent due to a {$errorMap[$errorType]}");
-    }
-    
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Users'],
-        ];
-        $posts = $this->paginate($this->Posts);
+        'specific reason for the error type.'; */
+        pr($type);
+        die('blackhole');
+        if ($exception instanceof SecurityException && $exception->getType() === 'secure') {
+            return $this->redirect('https://' . env('SERVER_NAME') . Router::url($this->request->getRequestTarget()));
+        }
 
-        $this->set(compact('posts'));
+        throw $exception;
+        /* CakeLog::notice("Request to the '{$this->request->params['action']}' " . 
+                    "endpoint was blackholed by SecurityComponent due to a {$errorMap[$errorType]}"); */
     }
 
     /**
@@ -166,14 +163,18 @@ class PostsController extends AppController
                 }
             }
             $post->user_id = $id;
-            
-            if(!$post->getErrors()) {
+
+            if($post->getErrors()) {
+                if(array_key_exists('id', $post->getErrors())) {
+                    $datum['error'] = $post->getError('id.isMine');
+                } else {
+                    $errors = $this->formErrors($post);
+                    $datum['errors'] = $errors;
+                }
+            } else {
                 if ($this->Posts->save($post)) {
                     $datum['success'] = true;
                 }
-            } else {
-                $errors = $this->formErrors($post);
-                $datum['errors'] = $errors;
             }
             
             return $this->jsonResponse($datum);
@@ -218,16 +219,18 @@ class PostsController extends AppController
             $post = $this->Posts->patchEntity($post, $postData);
             $post->user_id = $userId;
             
-            if(!$post->getErrors()) {
+            if($post->getErrors()) {
+                if(array_key_exists('id', $post->getErrors())) {
+                    $datum['error'] = $post->getError('id.isMine');
+                } else {
+                    $errors = $this->formErrors($post);
+                    $datum['errors'] = $errors;
+                }
+            } else {
                 if ($this->Posts->save($post)) {
                     $datum['success'] = true;
                 }
-            } else {
-                $errors = $this->formErrors($post);
-                $datum['errors'] = $errors;
             }
-            
-            return $this->jsonResponse($datum);
             
             return $this->jsonResponse($datum);
         }

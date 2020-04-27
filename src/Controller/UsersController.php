@@ -82,6 +82,10 @@ class UsersController extends AppController
 
     public function login()
     {
+        if($this->request->getSession()->read('Auth.User.id')) {
+            return $this->redirect(['action' => 'home']);
+        }
+
         $this->viewBuilder()->setLayout('default');
         if($this->request->is('post')) {
             $user = $this->Auth->identify();
@@ -182,7 +186,6 @@ class UsersController extends AppController
                     $to = $user['email'];
                     $this->send_email($userName, $fullName, $to, $mytoken);
                     $this->Flash->success(__('Email has been sent to activate your account.'));
-                    // $datum['success'] = true;
                     return $this->redirect(['action' => 'register']);
                 }
             }
@@ -257,12 +260,21 @@ class UsersController extends AppController
             $cond['Users.suffix LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
             $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($this->request->getData()['user']) . "%";
             $conditions['OR'] = $cond;
-
+            
         }
-        
-        $this->paginate = ['conditions' => [$conditions, 'Users.is_online !=' => 2], 'limit' => 10];
+        $this->paginate = [
+            'conditions' => [
+                ['Users.is_online !=' => 2],
+                ['Users.deleted' => 0],
+                [$conditions],
+            ],
+            'limit' => 5,
+            'order' => [
+                'Users.created' => 'desc',
+            ],
+        ];
         $data = $this->paginate($this->Users);
-
+        
         $this->set(compact('data'));
     }
     

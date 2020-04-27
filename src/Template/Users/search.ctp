@@ -46,28 +46,26 @@
             'current' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
         ]);
         echo "<nav class='paging'>";
-        echo $paginator->First('First');
+        echo $paginator->First('');
         echo "  ";
         
         if($paginator->hasPrev()) {
-            echo $paginator->prev('Prev');
+            echo $paginator->prev('');
         }
         echo "  ";
         
-        echo $paginator->numbers(['modulus' => 2]);
+        echo $paginator->numbers(['' => 2]);
         echo "  ";
         
         if($paginator->hasNext()) {
-            echo $paginator->next("Next");
+            echo $paginator->next("");
         }
         echo "  ";
 
-        echo $paginator->last('Last');
+        echo $paginator->last('');
         echo "</nav>";
     } else {
-        if(!$data->items) {
-            echo "<span class='container'><h2>No matched found</h2></span>";
-        }
+        echo "<span class='container'><h2>No matched found</h2></span>";
     }
 ?>
 </div>

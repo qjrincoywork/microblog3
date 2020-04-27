@@ -108,7 +108,7 @@
             $article .= $buttons;
             $article .= "</div>";
         }
-
+        
         $paginator = $this->Paginator;
         $this->Paginator->setTemplates([
             'number' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',

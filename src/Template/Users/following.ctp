@@ -47,11 +47,11 @@
             'current' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
         ]);
         echo "<nav class='paging'>";
-        echo $paginator->First('First');
+        echo $paginator->First('');
         echo "  ";
         
         if($paginator->hasPrev()) {
-            echo $paginator->prev('Prev');
+            echo $paginator->prev('');
         }
         echo "  ";
         
@@ -59,11 +59,11 @@
         echo "  ";
         
         if($paginator->hasNext()) {
-            echo $paginator->next("Next");
+            echo $paginator->next("");
         }
         echo "  ";
 
-        echo $paginator->last('Last');
+        echo $paginator->last('');
         echo "</nav>";
     } else {
         echo "<span class='container'><h2>".$message."</h2></span>";

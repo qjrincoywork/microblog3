@@ -43,7 +43,7 @@
             'prevActive' => '<a class="fa fa-arrow-left pl-3" title="previous" href="{{url}}"> {{text}} </a>',
             'first' => '<a class="fa fa-fast-backward pl-3" title="first" href="{{url}}"> {{text}} </a>',
             'last' => '<a class="fa fa-fast-forward pl-3" title="last" href="{{url}}"> {{text}} </a>',
-            'current' => '<b><a class="pl-3" href="{{url}}"> {{text}} </a></b>',
+            'current' => '<b><a class="text-secondary pl-3" title="current" href="{{url}}"> {{text}} </a></b>',
         ]);
         echo "<nav class='paging'>";
         echo $paginator->First('');

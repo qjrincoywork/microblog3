@@ -87,7 +87,7 @@ try {
  * When debug = true the metadata cache should only last
  * for a short time.
  */
-Configure::write('debug', 2);
+Configure::write('debug', 0);
 if (Configure::read('debug')) {
     // Configure::write('DebugKit.forceEnable', TRUE);
     // Plugin::addPlugin('DebugKit', ['bootstrap' => TRUE]);

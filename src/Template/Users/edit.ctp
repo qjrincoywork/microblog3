@@ -69,8 +69,8 @@
                 ],
                 'suffix' => [
                     'placeholder' => "Enter suffix ...",
-                    'required' => false,
                     'id' => 'suffix',
+                    'required' => false,
                     'label'=>['text'=>'Suffix',
                                 'for' => 'suffix',
                                 'class'=>'col-form-label'],

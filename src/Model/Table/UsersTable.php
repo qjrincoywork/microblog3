@@ -91,8 +91,8 @@ class UsersTable extends Table
             
         $validator
             ->add('first_name', 'first_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
-                'message' => 'Characters only.'
+                  'rule' => ['custom', "/^[A-Z]+$/i"],
+                  'message' => 'Characters only.'
             ])
             ->scalar('first_name')
             ->maxLength('first_name', 255)

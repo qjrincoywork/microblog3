@@ -279,7 +279,7 @@ $(function () {
                     "danger"
                 );
             } else {
-                fd.append("_method", "POST");
+                fd.append("_method", "GET");
                 fd.append("_csrfToken", csrfToken);
                 
                 posting = $.ajax({

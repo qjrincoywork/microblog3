@@ -16,6 +16,7 @@
                 'username' => [
                     'placeholder' => "Enter username ...", 
                     'required' => false,
+                    'id' => 'username',
                     'label'=>['text'=>'Username',
                             'for' => 'username',
                             'class'=>'col-form-label'],
@@ -24,6 +25,7 @@
                 'email' => [
                     'placeholder' => "Enter email ...", 
                     'required' => false,
+                    'id' => 'email',
                     'label'=>['text'=>'Email',
                             'for' => 'email',
                             'class'=>'col-form-label'],
@@ -32,6 +34,7 @@
                 'gender' => [
                     'required' => false,
                     'options' => $options,
+                    'id' => 'gender',
                     'label'=>['text'=>'Gender',
                             'for' => 'gender',
                             'class'=>'col-form-label'],
@@ -40,6 +43,7 @@
                 'first_name' => [
                     'placeholder' => "Enter first name ...",
                     'required' => false,
+                    'id' => 'first_name',
                     'label'=>['text'=>'First name',
                                 'for' => 'first_name',
                                 'class'=>'col-form-label'],
@@ -48,6 +52,7 @@
                 'last_name' => [
                     'placeholder' => "Enter last name ...",
                     'required' => false,
+                    'id' => 'last_name',
                     'label'=>['text'=>'Last Name',
                                 'for' => 'last_name',
                                 'class'=>'col-form-label'],
@@ -56,6 +61,7 @@
                 'middle_name' => [
                     'placeholder' => "Enter middle Name ...",
                     'required' => false,
+                    'id' => 'middle_name',
                     'label'=>['text'=>'Middle Name',
                                 'for' => 'middle_name',
                                 'class'=>'col-form-label'],
@@ -64,6 +70,7 @@
                 'suffix' => [
                     'placeholder' => "Enter suffix ...",
                     'required' => false,
+                    'id' => 'suffix',
                     'label'=>['text'=>'Suffix',
                                 'for' => 'suffix',
                                 'class'=>'col-form-label'],

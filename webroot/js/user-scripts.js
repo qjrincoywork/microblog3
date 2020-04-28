@@ -295,7 +295,6 @@ $(function () {
                 });
                 
                 posting.done(function (data) {
-                    console.log(data);
                     $("#mainContent").html(data);
                 })
             }

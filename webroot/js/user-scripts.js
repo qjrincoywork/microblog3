@@ -279,9 +279,8 @@ $(function () {
                     "danger"
                 );
             } else {
-                fd.append("_csrfToken", csrfToken);
                 fd.append("_method", "POST");
-                // fd.append("user", value);
+                fd.append("_csrfToken", csrfToken);
                 
                 posting = $.ajax({
                     type: "post",

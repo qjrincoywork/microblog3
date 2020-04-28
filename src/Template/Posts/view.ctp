@@ -1,5 +1,5 @@
 <?php if(empty($data)):?>
-        <span class='container'><h2>Post Deleted</h2></span>
+    <span class='container'><h2>Post Deleted</h2></span>
 <?php else:?>
 <?php
     $content = $data->content;
@@ -57,40 +57,45 @@
                 <?php
                 if($data->post_id) {
                     $sharedPost =  $this->System->getSharedPost($data->post_id);
-                    // $sharedFullName =  $this->System->getFullNameById($sharedPost->user->id);
-                    $sharedFullName =  $sharedPost->user->full_name;
-                    $sharedProfile = $sharedPost->user->profile_image;
-                    $sharedPostAgo = $sharedPost->post_ago;
-                    $sharedContent = h($sharedPost->content);
-                    
-                    $sharePost = "<div class='share-post border p-3'>";
-                   
-                    $sharePost .= "   <div class='row'>
-                                        <div class='post-img col-sm-2'>";
-                    $sharePost .=     "<img src='$sharedProfile'>";
-                    $sharePost .= "   </div>";
-
-                    $sharePost .= "<div class='post-details col-sm-10'>
-                                        <div class='row'>
-                                            <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $sharedPost->user->id])."'>"
-                                                .$sharedFullName.
-                                            "</a></div>
-                                            <div class='post-ago'>
-                                                $sharedPostAgo
+                    if($sharedPost) {
+                        $sharedFullName =  $sharedPost->user->full_name;
+                        $sharedProfile = $sharedPost->user->profile_image;
+                        $sharedPostAgo = $sharedPost->post_ago;
+                        $sharedContent = h($sharedPost->content);
+                        
+                        $sharePost = "<div class='share-post border p-3'>";
+                       
+                        $sharePost .= "   <div class='row'>
+                                            <div class='post-img col-sm-2'>";
+                        $sharePost .=     "<img src='$sharedProfile'>";
+                        $sharePost .= "   </div>";
+    
+                        $sharePost .= "<div class='post-details col-sm-10'>
+                                            <div class='row'>
+                                                <div class='post-user'><a href='".$this->Url->build(['controller' => 'users', 'action' => 'profile', 'user_id' => $sharedPost->user->id])."'>"
+                                                    .$sharedFullName.
+                                                "</a></div>
+                                                <div class='post-ago'>
+                                                    $sharedPostAgo
+                                                </div>
+                                                <div class='post-content col-sm-12'>
+                                                    <p>".$sharedContent. "<p>
+                                                </div>";
+                                if($sharedPost->image) {
+                                    $sharePost .="<div class='sharedpost-image col-sm-12'>
+                                                    <img src='/".$sharedPost->image."'>
+                                                </div>";
+                                }
+                        $sharePost .=       "</div>
                                             </div>
-                                            <div class='post-content col-sm-12'>
-                                                <p>".$sharedContent. "<p>
-                                            </div>";
-                            if($sharedPost->image) {
-                                $sharePost .="<div class='sharedpost-image col-sm-12'>
-                                                <img src='/".$sharedPost->image."'>
-                                            </div>";
-                            }
-                    $sharePost .=       "</div>
                                         </div>
-                                    </div>
-                                </div>";
-                                
+                                    </div>";
+                    } else {
+                        $sharePost = "<div class='share-post border p-2'>";
+                        $sharePost .= "<span class='container'><h2>Post Deleted</h2></span>";
+                        $sharePost .= "</div>";
+                    }
+                    
                     echo $sharePost;
                 }
                 ?>

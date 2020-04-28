@@ -90,23 +90,39 @@ class UsersTable extends Table
             ->notEmptyString('email', 'This field is required.');
             
         $validator
+            ->add('first_name', 'first_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('first_name')
             ->maxLength('first_name', 255)
             ->requirePresence('first_name', 'create')
             ->notEmptyString('first_name', 'This field is required.');
             
         $validator
+            ->add('last_name', 'last_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('last_name')
             ->maxLength('last_name', 255)
             ->requirePresence('last_name', 'create')
             ->notEmptyString('last_name', 'This field is required.');
             
         $validator
+            ->add('middle_name', 'middle_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('middle_name')
             ->maxLength('middle_name', 255)
             ->allowEmptyString('middle_name');
             
         $validator
+            ->add('suffix', 'suffixRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('suffix')
             ->maxLength('suffix', 255)
             ->allowEmptyString('suffix');
@@ -147,23 +163,39 @@ class UsersTable extends Table
             ->notEmptyString('email', 'This field is required.');
             
         $validator
+            ->add('first_name', 'first_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('first_name')
             ->maxLength('first_name', 255)
             ->requirePresence('first_name', 'create')
             ->notEmptyString('first_name', 'This field is required.');
             
         $validator
+            ->add('last_name', 'last_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('last_name')
             ->maxLength('last_name', 255)
             ->requirePresence('last_name', 'create')
             ->notEmptyString('last_name', 'This field is required.');
             
         $validator
+            ->add('middle_name', 'middle_nameRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('middle_name')
             ->maxLength('middle_name', 255)
             ->allowEmptyString('middle_name');
             
         $validator
+            ->add('suffix', 'suffixRule-1',[
+                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'message' => 'Characters only.'
+            ])
             ->scalar('suffix')
             ->maxLength('suffix', 255)
             ->allowEmptyString('suffix');

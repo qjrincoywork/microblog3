@@ -254,28 +254,27 @@ class UsersController extends AppController
         $conditions = [];
         if($user){
             $cond = [];
-            $cond['Users.first_name LIKE'] = "%" . trim($user) . "%";
-            $cond['Users.last_name LIKE'] = "%" . trim($user) . "%";
-            $cond['Users.email LIKE'] = "%" . trim($user) . "%";
-            $cond['Users.middle_name LIKE'] = "%" . trim($user) . "%";
-            $cond['Users.suffix LIKE'] = "%" . trim($user) . "%";
-            $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($user) . "%";
+            $cond['first_name LIKE'] = "%" . trim($user) . "%";
+            $cond['last_name LIKE'] = "%" . trim($user) . "%";
+            $cond['email LIKE'] = "%" . trim($user) . "%";
+            $cond['middle_name LIKE'] = "%" . trim($user) . "%";
+            $cond['suffix LIKE'] = "%" . trim($user) . "%";
+            $cond["CONCAT(first_name,' ',last_name) LIKE"] = "%" . trim($user) . "%";
             $conditions['OR'] = $cond;
         }
         $this->paginate = [
             'conditions' => [
-                ['Users.is_online !=' => 2],
-                ['Users.deleted' => 0],
+                ['is_online !=' => 2],
+                ['deleted' => 0],
                 [$conditions],
             ],
             'limit' => 5,
             'order' => [
-                'Users.created' => 'desc',
+                'created' => 'desc',
             ],
         ];
         $data = $this->paginate($this->Users);
-        var_dump($data);
-        die('search');
+        
         $this->set(compact('data'));
     }
     

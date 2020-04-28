@@ -19,17 +19,7 @@ class CommentsController extends AppController
         parent::initialize();
         $this->loadModel('Posts');
     }
-
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Users', 'Posts'],
-        ];
-        $comments = $this->paginate($this->Comments);
-
-        $this->set(compact('comments'));
-    }
-
+    
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
@@ -38,27 +28,7 @@ class CommentsController extends AppController
             $this->viewBuilder()->setLayout(false);
         }
     }
-    /**
-     * View method
-     *
-     * @param string|null $id Comment id.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $comment = $this->Comments->get($id, [
-            'contain' => ['Users', 'Posts'],
-        ]);
-
-        $this->set('comment', $comment);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
+    
     public function add($id)
     {
         $comment = $this->Comments->newEntity();
@@ -88,14 +58,7 @@ class CommentsController extends AppController
         
         $this->set(compact('data', 'comment'));
     }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Comment id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
     public function edit($id)
     {
         $comment = $this->Comments->get($id);
@@ -125,13 +88,6 @@ class CommentsController extends AppController
         $this->set(compact('comment'));
     }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Comment id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function delete($id)
     {
         $comment = $this->Comments->get($id);

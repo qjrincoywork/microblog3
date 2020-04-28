@@ -6,8 +6,8 @@
         $editPicHref = $this->Url->build(['controller' => 'users', 'action' => 'editPicture']);
         $picClass = $myProfile ? 'update_picture' : '';
         $editPicHref = $myProfile ? "href='".$editPicHref."'" : '';
-
-        $joined = date(' M Y', strtotime($profile->created));
+        
+        $joined = $profile->joined;
         $myPic = $profile->profile_image;
         $myFullName = $profile->full_name;
     ?>

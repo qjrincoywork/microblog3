@@ -43,7 +43,6 @@ class SystemHelper extends Helper {
     
     public function getDateJoined($userId) {
         $user = TableRegistry::get('Users');
-        // $user = new User();
         $data = $user->find('all', [
             'fields' => ['User.created'],
             'conditions' => ['User.id' => $userId]

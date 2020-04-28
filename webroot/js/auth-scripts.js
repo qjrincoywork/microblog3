@@ -45,7 +45,7 @@ var fxAuth = {
 
 $(function () {
     fxAuth.UIHelper();
-    $("body").on("click", ".register_user, .login_user", function (event) {
+    $("body").on("click", ".register_user, .login_use", function (event) {
         
         event.preventDefault();
         event.stopPropagation();
@@ -83,7 +83,6 @@ $(function () {
         }
 
         posting.done(function (data) {
-            console.log(data);
             if(data.success){
                 if(className == 'register_user') {
                     fx.displayNotify("User", 
@@ -93,7 +92,6 @@ $(function () {
                         location.reload()
                     }, 3000);
                 } else {
-                    // location.reload('/users/home');
                     window.location = '/users/home';
                 }
             } else {
@@ -104,7 +102,12 @@ $(function () {
                         fx.displayNotify("User", "Registration failed.", "danger");
                     }
                 } else {
-                    fx.displayNotify("User", data.errors, "danger");
+                    if (data.errors) {
+                        fxAuth.displayFormErrorMessages(data, form);
+                    } else {
+                        fx.displayNotify("", data.error, "danger");
+                    }
+                    // fx.displayNotify("User", data.errors, "danger");
                 }
             }
         })

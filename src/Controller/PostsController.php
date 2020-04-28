@@ -17,55 +17,23 @@ class PostsController extends AppController
     public function initialize()
     {
         parent::initialize();
-        // $this->loadComponent('Security', ['blackHoleCallback' => 'blackHole']);
-        // $this->loadComponent('Security');
     }
     
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        // $this->Security->requireSecure();
         $this->viewBuilder()->setLayout('main');
-        // $this->Security->setConfig('unlockedActions', ['edit']);
         if($this->request->is('ajax')) {
             $this->viewBuilder()->setLayout(false);
         }
     }
     
-    // public function blackhole($errorType) {
-    public function blackhole($type/* , SecurityException $exception */) {
-        /* $errorMap['auth']   = 'form validation error, or a controller/action mismatch error.';
-        $errorMap['csrf']   = 'CSRF error.';
-        $errorMap['get']    = 'HTTP method restriction failure.';
-        $errorMap['post']   = $errorMap['get'];
-        $errorMap['put']    = $errorMap['get'];
-        $errorMap['delete'] = $errorMap['get'];
-        $errorMap['secure'] = 'SSL method restriction failure.';
-        $errorMap['myMoreValuableErrorType']    = 'My custom and very ' . 
-        'specific reason for the error type.'; */
-        pr($type);
-        die('blackhole');
-        if ($exception instanceof SecurityException && $exception->getType() === 'secure') {
-            return $this->redirect('https://' . env('SERVER_NAME') . Router::url($this->request->getRequestTarget()));
-        }
-
-        throw $exception;
-        /* CakeLog::notice("Request to the '{$this->request->params['action']}' " . 
-                    "endpoint was blackholed by SecurityComponent due to a {$errorMap[$errorType]}"); */
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Post id.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function view($id)
     {
-        $data = $this->Posts->get($id, [
+        $data = $this->Posts->find('all', [
             'contain' => ['Users'],
-        ]);
+            'conditions' => ['Posts.id' => $id,'Posts.deleted' => 0],
+        ])->first();
         
         $this->paginate = [
             'limit' => 3,
@@ -80,25 +48,19 @@ class PostsController extends AppController
         $this->set('title', 'User Post');
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
     public function add()
     {
         $post = $this->Posts->newEntity();
         $datum['success'] = false;
         if ($this->request->is('post')) {
             $id = $this->request->getSession()->read('Auth.User.id');
-            $username = $this->request->getSession()->read('Auth.User.username');
             
             $post = $this->Posts->patchEntity($post, $this->request->getData());
             $post->user_id = $id;
             if($this->request->getData()['image'] == 'undefined') {
                 $post->image = null;
             } else {
-                $uploadFolder = "img/".$username;
+                $uploadFolder = "img/".$id;
                 
                 if(!file_exists($uploadFolder)) {
                     mkdir($uploadFolder);
@@ -125,14 +87,7 @@ class PostsController extends AppController
             return $this->jsonResponse($datum);
         }
     }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Post id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
     public function edit($id)
     {
         $post = $this->Posts->get($id, [
@@ -142,14 +97,13 @@ class PostsController extends AppController
             $postData = $this->request->getData();
             $datum['success'] = false;
             $id = $this->request->getSession()->read('Auth.User.id');
-            $username = $this->request->getSession()->read('Auth.User.username');
             
             if($postData['image'] == 'undefined') {
                 unset($postData['image']);
                 $post = $this->Posts->patchEntity($post, $postData);
             } else {
                 $post = $this->Posts->patchEntity($post, $postData);
-                $uploadFolder = "img/".$username;
+                $uploadFolder = "img/".$id;
                 
                 if(!file_exists($uploadFolder)) {
                     mkdir($uploadFolder);
@@ -186,9 +140,9 @@ class PostsController extends AppController
         $post = $this->Posts->newEntity();
         $datum['success'] = false;
         if($this->request->is('post')) {
-            $postData = $this->request->getData();
-            // $postData['created'] = date('Y-m-d H:i:s');
             $userId = $this->request->getSession()->read('Auth.User.id');
+            $postData = $this->request->getData();
+            
             $post = $this->Posts->patchEntity($post, $postData);
             $post->user_id = $userId;
             

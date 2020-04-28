@@ -41,94 +41,7 @@ class UsersTable extends Table
             'foreignKey' => 'user_id',
         ]);
     }
-
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationDefault(Validator $validator)
-    {
-        $validator
-            ->integer('id')
-            ->allowEmptyString('id', null, 'create');
-            
-        $validator
-            ->scalar('username')
-            ->maxLength('username', 255)
-            ->requirePresence('username', 'create')
-            ->notEmptyString('username', 'This field is required.');
-            
-        $validator
-            ->add('password', 'passwordRule-1',[
-                'rule' => ['custom', "/^(?=.*\d)(?=.*[@#\-_$%^&+=§!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=§!\?]{8,20}$/"],
-                'message' => 'The password does not meet the requirements.'
-            ])
-            ->scalar('password')
-            ->maxLength('password', 255)
-            ->requirePresence('password', 'create')
-            ->notEmptyString('password', 'This field is required.');
-
-        $validator
-            /* ->add('confirm_password', 'custom', [
-                'rule' => function ($value, $context) {
-                    if ($context['data']['password'] !== $value){
-                        return false;
-                    }
-                    return true;
-                },
-                'message' => 'Does not match with password.',
-            ]) */
-            ->add('confirm_password', 'no-misspelling', [
-                'rule' => ['compareWith', 'password'],
-                'message' => 'Passwords are not equal',
-            ])
-            ->scalar('confirm_password')
-            ->maxLength('confirm_password', 255)
-            ->requirePresence('confirm_password', ['create', 'update'])
-            ->notEmptyString('confirm_password', 'This field is required.');
-            
-        $validator
-            ->email('email')
-            ->requirePresence('email', 'create')
-            ->notEmptyString('email', 'This field is required.');
-            
-        $validator
-            ->scalar('image')
-            ->maxLength('image', 255)
-            ->allowEmptyFile('image');
-            
-        $validator
-            ->scalar('first_name')
-            ->maxLength('first_name', 255)
-            ->requirePresence('first_name', 'create')
-            ->notEmptyString('first_name', 'This field is required.');
-            
-        $validator
-            ->scalar('last_name')
-            ->maxLength('last_name', 255)
-            ->requirePresence('last_name', 'create')
-            ->notEmptyString('last_name', 'This field is required.');
-            
-        $validator
-            ->scalar('middle_name')
-            ->maxLength('middle_name', 255)
-            ->allowEmptyString('middle_name');
-            
-        $validator
-            ->scalar('suffix')
-            ->maxLength('suffix', 255)
-            ->allowEmptyString('suffix');
-            
-        $validator
-            ->integer('gender')
-            ->requirePresence('gender', 'create')
-            ->notEmptyString('gender', 'This field is required.');
-            
-        return $validator;
-    }
-
+    
     public function validationRegister(Validator $validator)
     {
         $validator
@@ -136,6 +49,11 @@ class UsersTable extends Table
             ->allowEmptyString('id', null, 'create');
             
         $validator
+            ->add('username', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => 'Username is already used.'
+            ])
             ->scalar('username')
             ->maxLength('username', 255)
             ->requirePresence('username', 'create')
@@ -152,18 +70,9 @@ class UsersTable extends Table
             ->notEmptyString('password', 'This field is required.');
 
         $validator
-            /* ->add('confirm_password', 'custom', [
-                'rule' => function ($value, $context) {
-                    if ($context['data']['password'] !== $value){
-                        return false;
-                    }
-                    return true;
-                },
-                'message' => 'Does not match with password.',
-            ]) */
             ->add('confirm_password', 'no-misspelling', [
                 'rule' => ['compareWith', 'password'],
-                'message' => 'Passwords are not equal',
+                'message' => 'Does not match with password.',
             ])
             ->scalar('confirm_password')
             ->maxLength('confirm_password', 255)
@@ -171,6 +80,11 @@ class UsersTable extends Table
             ->notEmptyString('confirm_password', 'This field is required.');
 
         $validator
+            ->add('email', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => 'Email is already used.'
+            ])
             ->email('email')
             ->requirePresence('email', 'create')
             ->notEmptyString('email', 'This field is required.');
@@ -212,15 +126,24 @@ class UsersTable extends Table
             ->allowEmptyString('id', null, 'create');
             
         $validator
+            ->add('username', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => 'Username is already used'
+            ])
             ->scalar('username')
             ->maxLength('username', 255)
-            ->requirePresence('username', 'create')
+            ->requirePresence('username', ['create', 'update'])
             ->notEmptyString('username', 'This field is required.');
             
-
         $validator
+            ->add('email', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => 'Email is already used'
+            ])
             ->email('email')
-            ->requirePresence('email', 'create')
+            ->requirePresence('email', ['create', 'update'])
             ->notEmptyString('email', 'This field is required.');
             
         $validator
@@ -249,7 +172,6 @@ class UsersTable extends Table
             ->integer('gender')
             ->requirePresence('gender', 'create')
             ->notEmptyString('gender', 'This field is required.');
-
         return $validator;
     }
 
@@ -270,13 +192,8 @@ class UsersTable extends Table
             ->notEmptyString('password', 'This field is required.');
 
         $validator
-            ->add('confirm_password', 'custom', [
-                'rule' => function ($value, $context) {
-                    if ($context['data']['password'] !== $value){
-                        return false;
-                    }
-                    return true;
-                },
+            ->add('confirm_password', 'no-misspelling', [
+                'rule' => ['compareWith', 'password'],
                 'message' => 'Does not match with password.',
             ])
             ->scalar('confirm_password')

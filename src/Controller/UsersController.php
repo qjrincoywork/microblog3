@@ -20,17 +20,13 @@ class UsersController extends AppController
         parent::initialize();
         $this->loadModel('Posts');
         $this->loadModel('Follows');
-        // $this->loadComponent('Csrf');
         // $this->loadComponent('Security', ['blackHoleCallback' => 'blackHole']);
     }
 
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        // $this->Auth->allow(['register', 'activation', 'logout', 'testEmail']);
-        // $this->getEventManager()->off($this->Csrf);
         $this->viewBuilder()->setLayout('main');
-        // $this->Security->requireSecure();
         
         if($this->request->is('ajax')) {
             $this->viewBuilder()->setLayout(false);
@@ -89,17 +85,21 @@ class UsersController extends AppController
         $this->viewBuilder()->setLayout('default');
         if($this->request->is('post')) {
             $user = $this->Auth->identify();
+            
             if($user) {
                 if($user['is_online'] == 2) {
-                    $this->Flash->error('Please activate your account first');
+                    $this->Flash->error(__('Please activate your account first.'));
                 } else {
-                    $this->Auth->setUser($user);
-                    return $this->jsonResponse(['success' => true]);
-                    // return $this->redirect($this->Auth->redirectUrl("/users/home"));
+                    $userData = $this->Users->get($user['id']);
+                    $userData->set(['is_online' => 1]);
+                    
+                    if($this->Users->save($userData)) {
+                        $this->Auth->setUser($user);
+                        return $this->redirect($this->Auth->redirectUrl("/users/home"));
+                    }
                 }
             } else {
-                return $this->jsonResponse(['errors' => 'Invalid username or password']);
-                // $this->Flash->error('Invalid username or password');
+                $this->Flash->error(__('Invalid username or password.'));
             }
         }
     }
@@ -114,9 +114,8 @@ class UsersController extends AppController
             $message = "Dear <span style='color:#666666'>" . ucwords($name) . "</span>,<br/><br/>";
             $message .= "<b>Full Name:</b> " . ucwords($name) . "<br/>";
             $message .= "<b>Email Address:</b> " . $to . "<br/>";
-            // $message .= "<b>Activate your account by clicking </strong><a href='$activationUrl'>Activate Account now</a></strong></b><br/>";
+            $message .= "<b>Activate your account by clicking </strong><a href='$activationUrl'>Activate Account now</a></strong></b><br/>";
             
-            // $email = new Email('default');
             $email = new Email('gmail');
             $email->setFrom([$to => 'Microblog 3'])
                     ->setEmailFormat('html')
@@ -160,8 +159,12 @@ class UsersController extends AppController
 
     public function logout()
     {
-        // $this->Flash->success('You are now logout');
-        return $this->redirect($this->Auth->logout());
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($id);
+        $user->set(['is_online' => 0]);
+        if($this->Users->save($user)) {
+            return $this->redirect($this->Auth->logout());
+        }
     }
 
     public function register()
@@ -199,19 +202,17 @@ class UsersController extends AppController
             $this->Flash->error(__('Invalid token'));
         }
         
-        $user = TableRegistry::getTableLocator()->get('Users')->find('all', [
+        $user = $this->Users->find('all', [
                         'conditions' => ['Users.token' => $token]
         ])->first();
-
+        
         if(!$user) {
             throw new NotFoundException();
             $this->Flash->error(__('Invalid token!'));
         }
         
         if(isset($user['is_online']) && $user['is_online'] == 2) {
-            $id = $user['id'];
-            $user->set(['id' => $id, 'is_online' => 0]);
-            
+            $user->set(['is_online' => 0]);
             $this->Users->save($user);
             $this->Flash->success(__('Account successfully verified!, You can now login'));
             $this->redirect(['controller' => 'users', 'action' => 'login']);
@@ -285,8 +286,8 @@ class UsersController extends AppController
             $datum['success'] = false;
             $postData = $this->request->getData();
             $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
-            $user->user_id = $id;
             
+            $user->user_id = $id;
             if(!$user->getErrors()) {
                 if ($this->Users->save($user)) {
                     $datum['success'] = true;
@@ -315,10 +316,9 @@ class UsersController extends AppController
             $message = "Don't have any follower";
         }
         
-        $ids = TableRegistry::getTableLocator()
-                            ->get('Follows')
-                            ->find('list', ['valueField' => $column])
-                            ->where($conditions)->toArray();
+        $ids = $this->Follows->find('list', ['valueField' => $column])
+                             ->where($conditions)->toArray();
+                             
         if($ids) {
             $this->paginate = [
                 'Users' => [
@@ -345,14 +345,13 @@ class UsersController extends AppController
         if($this->request->is(['put', 'patch'])) {
             $datum['success'] = false;
             $postData = $this->request->getData();
-            $username = $user->username;
             
             if($postData['image'] == 'undefined') {
                 $postData['image'] = null;
                 $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
             } else {
                 $user = $this->Users->patchEntity($user, $postData, ['validate' => 'Update']);
-                $uploadFolder = "img/".$username;
+                $uploadFolder = "img/".$id;
                 
                 if(!file_exists($uploadFolder)) {
                     mkdir($uploadFolder);

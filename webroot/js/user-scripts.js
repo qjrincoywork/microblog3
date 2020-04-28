@@ -281,11 +281,11 @@ $(function () {
             } else {
                 fd.append("_csrfToken", csrfToken);
                 fd.append("_method", "POST");
-                fd.append("user", value);
+                // fd.append("user", value);
                 
                 posting = $.ajax({
                     type: "post",
-                    url: url,
+                    url: url + '/' + value,
                     data: fd,
                     headers: {
                         "X-CSRF-Token": csrfToken

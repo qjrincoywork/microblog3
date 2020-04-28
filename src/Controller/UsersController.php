@@ -250,16 +250,16 @@ class UsersController extends AppController
         $this->set(compact('data', 'profile'));
     }
 
-    public function search() {
+    public function search($user) {
         $conditions = [];
-        if(isset($this->request->getData()['user'])){
+        if($user){
             $cond = [];
-            $cond['Users.first_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
-            $cond['Users.last_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
-            $cond['Users.email LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
-            $cond['Users.middle_name LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
-            $cond['Users.suffix LIKE'] = "%" . trim($this->request->getData()['user']) . "%";
-            $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($this->request->getData()['user']) . "%";
+            $cond['Users.first_name LIKE'] = "%" . trim($user) . "%";
+            $cond['Users.last_name LIKE'] = "%" . trim($user) . "%";
+            $cond['Users.email LIKE'] = "%" . trim($user) . "%";
+            $cond['Users.middle_name LIKE'] = "%" . trim($user) . "%";
+            $cond['Users.suffix LIKE'] = "%" . trim($user) . "%";
+            $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($user) . "%";
             $conditions['OR'] = $cond;
             
         }
@@ -275,7 +275,6 @@ class UsersController extends AppController
             ],
         ];
         $data = $this->paginate($this->Users);
-        
         $this->set(compact('data'));
     }
     

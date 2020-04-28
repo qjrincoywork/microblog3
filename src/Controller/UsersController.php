@@ -261,7 +261,6 @@ class UsersController extends AppController
             $cond['Users.suffix LIKE'] = "%" . trim($user) . "%";
             $cond["CONCAT(Users.first_name,' ',Users.last_name) LIKE"] = "%" . trim($user) . "%";
             $conditions['OR'] = $cond;
-            
         }
         $this->paginate = [
             'conditions' => [
@@ -275,6 +274,8 @@ class UsersController extends AppController
             ],
         ];
         $data = $this->paginate($this->Users);
+        var_dump($data);
+        die('search');
         $this->set(compact('data'));
     }
     
@@ -306,7 +307,7 @@ class UsersController extends AppController
         $id = $this->request->getQuery()[$field];
         $data = [];
         $conditions = ['Follows.'.$field => $id,'Follows.deleted' => 0];
-
+        
         if($field == 'user_id') {
             $column = 'following_id';
             $message = 'No user following';

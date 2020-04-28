@@ -31,14 +31,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <body>
         <div class="page-container">
             <header class="header-desktop">
-                <div class="col-md-2 offset-md-10">
-                    <?=
-                        $this->Html->link(
-                            'Login',
-                            ['controller' => 'Users', 'action' => 'login', '_full' => true],
-                            ['class' => 'auth-btn btn-sm btn-outline-secondary', 'escape' => false]
-                        );
-                    ?>
+                <div class="col-md-1 offset-md-11">
+                    <?php if($this->request->getAttribute("here") == '/users/login'):?>
                     <?=
                         $this->Html->link(
                             'Sign up',
@@ -46,6 +40,15 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                             ['class' => 'auth-btn btn-sm btn-outline-secondary', 'escape' => false]
                         );
                     ?>
+                    <?php else:?>
+                    <?=
+                        $this->Html->link(
+                            'Login',
+                            ['controller' => 'Users', 'action' => 'login', '_full' => true],
+                            ['class' => 'auth-btn btn-sm btn-outline-secondary', 'escape' => false]
+                        );
+                    ?>
+                    <?php endif;?>
                 </div>
             </header>
             <div id="content">

@@ -116,7 +116,7 @@ class UsersController extends AppController
             $message .= "<b>Email Address:</b> " . $to . "<br/>";
             $message .= "<b>Activate your account by clicking </strong><a href='$activationUrl'>Activate Account now</a></strong></b><br/>";
             
-            $email = new Email('gmail');
+            $email = new Email();
             $email->setFrom([$to => 'Microblog 3'])
                     ->setEmailFormat('html')
                     ->setTo($to)

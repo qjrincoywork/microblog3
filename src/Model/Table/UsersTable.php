@@ -91,7 +91,7 @@ class UsersTable extends Table
             
         $validator
             ->add('first_name', 'first_nameRule-1',[
-                  'rule' => ['custom', "/^[A-Z]+$/i"],
+                  'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                   'message' => 'Characters only.'
             ])
             ->scalar('first_name')
@@ -101,7 +101,7 @@ class UsersTable extends Table
             
         $validator
             ->add('last_name', 'last_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('last_name')
@@ -111,7 +111,7 @@ class UsersTable extends Table
             
         $validator
             ->add('middle_name', 'middle_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('middle_name')
@@ -120,7 +120,7 @@ class UsersTable extends Table
             
         $validator
             ->add('suffix', 'suffixRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('suffix')
@@ -164,7 +164,7 @@ class UsersTable extends Table
             
         $validator
             ->add('first_name', 'first_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('first_name')
@@ -174,7 +174,7 @@ class UsersTable extends Table
             
         $validator
             ->add('last_name', 'last_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('last_name')
@@ -184,7 +184,7 @@ class UsersTable extends Table
             
         $validator
             ->add('middle_name', 'middle_nameRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('middle_name')
@@ -193,7 +193,7 @@ class UsersTable extends Table
             
         $validator
             ->add('suffix', 'suffixRule-1',[
-                'rule' => ['custom', "/^[A-Z]+$/i"],
+                'rule' => ['custom', "/^[a-zA-Z ]*$/"],
                 'message' => 'Characters only.'
             ])
             ->scalar('suffix')

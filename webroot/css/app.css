@@ -3597,6 +3597,13 @@ fieldset:disabled a.btn {
     font-weight: bolder;
     font-size: 14px;
 }
+.email-image {
+    text-align: center;
+}
+.email-image img {
+    max-width: 100%;
+    height: auto;
+}
 #UserLoginForm input[type="text"], #UserLoginForm input[type="password"] {
   border-top-style: hidden;
   border-right-style: hidden;

@@ -20,7 +20,6 @@ class UsersController extends AppController
         parent::initialize();
         $this->loadModel('Posts');
         $this->loadModel('Follows');
-        // $this->loadComponent('Security', ['blackHoleCallback' => 'blackHole']);
     }
 
     public function beforeFilter(Event $event)
@@ -33,14 +32,6 @@ class UsersController extends AppController
         }
     }
 
-    /* public function blackHole($error = '', SecurityException $exception = null)
-    {
-        if ($exception instanceof SecurityException && $exception->getType() === 'secure') {
-            return $this->redirect('https://' . env('SERVER_NAME') . Router::url($this->request->getRequestTarget()));
-        }
-
-        throw $exception;
-    } */
     public function getPosts($conditions) {
         $this->paginate = [
             'Posts' => [
@@ -62,15 +53,15 @@ class UsersController extends AppController
     {
         $id = $this->request->getSession()->read('Auth.User.id');
         $following = $this->Follows->find()
-                             ->select('Follows.following_id')
-                             ->where(['Follows.user_id' => $id, 'Follows.deleted' => 0])
-                             ->toArray();
+                                   ->select('Follows.following_id')
+                                   ->where(['Follows.user_id' => $id, 'Follows.deleted' => 0])
+                                   ->toArray();
         $ids = [];
         foreach($following as $key => $val) {
             $ids[] = $val['following_id'];
         }
         $ids[] = $id;
-
+        
         $data = $this->getPosts(['Posts.deleted' => 0, 'Posts.user_id IN' => $ids]);
         $post = $this->Posts->newEntity();
         $this->set(compact('post', 'data'));
@@ -81,7 +72,7 @@ class UsersController extends AppController
         if($this->request->getSession()->read('Auth.User.id')) {
             return $this->redirect(['action' => 'home']);
         }
-
+        
         $this->viewBuilder()->setLayout('default');
         if($this->request->is('post')) {
             $user = $this->Auth->identify();
@@ -109,20 +100,23 @@ class UsersController extends AppController
             $activationUrl = (isset($_SERVER['HTTPS']) === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
             $subject = "Microblog Account Activation";
             $name = "Incoy, Quir John";
+            $username = "kerdzawtz";
             $to = trim("quirjohnincoy.work@gmail.com");
-            
-            $message = "Dear <span style='color:#666666'>" . ucwords($name) . "</span>,<br/><br/>";
-            $message .= "<b>Full Name:</b> " . ucwords($name) . "<br/>";
-            $message .= "<b>Email Address:</b> " . $to . "<br/>";
-            $message .= "<b>Activate your account by clicking </strong><a href='$activationUrl'>Activate Account now</a></strong></b><br/>";
             
             $email = new Email('gmail');
             $email->setFrom([$to => 'Microblog 3'])
-                    ->setEmailFormat('html')
-                    ->setTo($to)
-                    ->setSubject($subject);
+                  ->setEmailFormat('html')
+                  ->setTo($to)
+                  ->setSubject($subject)
+                  ->setViewVars(['name' => $name, 
+                                 'email' => $to, 
+                                 'username' => $username, 
+                                 'url' => $activationUrl])
+                  ->viewBuilder()
+                  ->setLayout('email-layout')
+                  ->setTemplate('default');
                     
-            if($email->send($message)) {
+            if($email->send()) {
                 echo "Email sent";
             } else {
                 echo "Email not sent";
@@ -132,26 +126,24 @@ class UsersController extends AppController
         }
     }
     
-    public function send_email($userName, $fullName, $to, $token) {
+    public function sendEmail($userName, $fullName, $to, $token) {
         try {
             $activationUrl = (isset($_SERVER['HTTPS']) === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . "/users/activation/" . $token;
             $subject = "Microblog Account Activation";
-            
-            $message = "Dear <span style='color:#666666'>" . ucwords($fullName) . "</span>,<br/><br/>";
-            $message .= "Your account has been created successfully.<br/>";
-            $message .= "Please look at the details of your account below: <br/><br/>";
-            $message .= "<b>Full Name:</b> " . ucwords($fullName) . "<br/>";
-            $message .= "<b>Email Address:</b> " . trim($to) . "<br/>";
-            $message .= "<b>Username:</b> " . $userName . "<br/>";
-            $message .= "<b>Activate your account by clicking </strong><a href='$activationUrl'>Activate Account now</a></strong></b><br/>";
-            $message .= "<br/>Thanks, <br/>YNS Team";
 
             $email = new Email('gmail');
             $email->setFrom([$to => 'Microblog 3'])
                     ->setEmailFormat('html')
                     ->setTo($to)
                     ->setSubject($subject)
-                    ->send($message);
+                    ->setViewVars(['name' => $name, 
+                                   'email' => $to, 
+                                   'username' => $username, 
+                                   'url' => $activationUrl])
+                    ->viewBuilder()
+                    ->setLayout('email-layout')
+                    ->setTemplate('default')
+                    ->send();
         } catch (\Throwable $th) {
             echo $th;
         }
@@ -159,12 +151,7 @@ class UsersController extends AppController
 
     public function logout()
     {
-        $id = $this->request->getSession()->read('Auth.User.id');
-        $user = $this->Users->get($id);
-        $user->set(['is_online' => 0]);
-        if($this->Users->save($user)) {
-            return $this->redirect($this->Auth->logout());
-        }
+        return $this->redirect($this->Auth->logout());
     }
 
     public function register()
@@ -187,7 +174,7 @@ class UsersController extends AppController
                     $fullName = $user['last_name'].', '.$user['first_name'].' '.$user['middle_name'];
                     $userName = $user['username'];
                     $to = $user['email'];
-                    $this->send_email($userName, $fullName, $to, $mytoken);
+                    $this->sendEmail($userName, $fullName, $to, $mytoken);
                     $this->Flash->success(__('Email has been sent to activate your account.'));
                     return $this->redirect(['action' => 'register']);
                 }
@@ -201,10 +188,7 @@ class UsersController extends AppController
             throw new NotFoundException();
             $this->Flash->error(__('Invalid token'));
         }
-        
-        $user = $this->Users->find('all', [
-                        'conditions' => ['Users.token' => $token]
-        ])->first();
+        $user = $this->Users->find('all', ['conditions' => ['Users.token' => $token]])->first();
         
         if(!$user) {
             throw new NotFoundException();
@@ -228,7 +212,6 @@ class UsersController extends AppController
         if(!$id) {
             throw new NotFoundException();
         }
-        
         $myId = $this->request->getSession()->read('Auth.User.id');
         
         if($myId != $id) {
@@ -238,8 +221,8 @@ class UsersController extends AppController
         }
         
         $profile = $this->Users->find('all', [
-            'conditions' => ['Users.id' => $id, 'Users.is_online !=' => 2]
-        ])->first();
+                                        'conditions' => ['Users.id' => $id, 'Users.is_online !=' => 2]
+                                     ])->first();
 
         if(!$profile) {
             throw new NotFoundException();
@@ -357,8 +340,7 @@ class UsersController extends AppController
                 }
                 
                 $path = $uploadFolder."/".$postData['image']['name'];
-                if(move_uploaded_file($postData['image']['tmp_name'],
-                                        $path)) {
+                if(move_uploaded_file($postData['image']['tmp_name'], $path)) {
                     $user->image = $path;
                 }
             }
@@ -401,33 +383,47 @@ class UsersController extends AppController
         unset($user['password']);
         $this->set(compact('user'));
     }
-
+    
     public function follow($followingId) {
-        $datum['success'] = false;
         $id = $this->request->getSession()->read('Auth.User.id');
         $user = $this->Users->get($followingId);
         if($user) {
             $exists = $this->Follows->find('all', [
-                'conditions' => [
-                        ['Follows.following_id' => $followingId,
-                         'Follows.user_id' => $id]
-                ]
-            ])->first();
-            
+                                                'conditions' => [
+                                                    ['Follows.following_id' => $followingId], 
+                                                    ['Follows.user_id' => $id]
+                                                ]
+                                           ])->first();
+                                           
             if(!$exists) {
                 $follow = $this->Follows->newEntity();
                 $follow->user_id = $id;
                 $follow->following_id = $followingId;
-                $this->Follows->save($follow);
-                $datum['success'] = true;
-            } else {
-                $status = $exists->deleted ? 0 : 1;
-                $exists->deleted = $status;
-                $this->Follows->save($exists);
-                $datum['success'] = true;
+                $result = $this->Follows->save($follow);
             }
         }
-        
+        $datum = ['success' => (isset($result)) ? true : false];
+        return $this->jsonResponse($datum);
+    }
+
+    public function unfollow($followingId) {
+        $id = $this->request->getSession()->read('Auth.User.id');
+        $user = $this->Users->get($followingId);
+        if($user) {
+            $exists = $this->Follows->find('all', [
+                                                'conditions' => [
+                                                    ['Follows.following_id' => $followingId], 
+                                                    ['Follows.user_id' => $id]
+                                                ]
+                                           ])->first();
+                                           
+            if($exists) {
+                $status = $exists->deleted ? 0 : 1;
+                $exists->deleted = $status;
+                $result = $this->Follows->save($exists);
+            }
+        }
+        $datum = ['success' => (isset($result)) ? true : false];
         return $this->jsonResponse($datum);
     }
 }

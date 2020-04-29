@@ -10,7 +10,7 @@ class LikesController extends AppController
     {
         parent::initialize();
     }
-
+    
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
@@ -21,30 +21,41 @@ class LikesController extends AppController
     }
     
     public function add($postId) {
-        $datum['success'] = false;
         $id = $this->request->getSession()->read('Auth.User.id');
         
         $exists = $this->Likes->find('all', [
-            'conditions' => [
-                    ['Likes.post_id' => $postId,
-                     'Likes.user_id' => $id
-                ]
-            ]
-        ])->first();
-        
+                                        'conditions' => [
+                                            ['Likes.post_id' => $postId],
+                                            ['Likes.user_id' => $id]
+                                        ]
+                                    ])->first();
+                  
         if(!$exists) {
-            $datum['success'] = true;
             $like = $this->Likes->newEntity();
             $like->post_id = $postId;
             $like->user_id = $id;
-            $this->Likes->save($like);
-        } else {
-            $datum['success'] = true;
+            $result = $this->Likes->save($like);
+        }
+        $datum = ['success' => (isset($result)) ? true : false];
+        return $this->jsonResponse($datum);
+    }
+    
+    public function delete($postId) {
+        $id = $this->request->getSession()->read('Auth.User.id');
+        
+        $exists = $this->Likes->find('all', [
+                                        'conditions' => [
+                                            ['Likes.post_id' => $postId],
+                                            ['Likes.user_id' => $id]
+                                        ]
+                                    ])->first();
+                  
+        if($exists) {
             $status = $exists->deleted ? 0 : 1;
             $exists->deleted = $status;
-            $this->Likes->save($exists);
+            $result = $this->Likes->save($exists);
         }
-        
+        $datum = ['success' => (isset($result)) ? true : false];
         return $this->jsonResponse($datum);
     }
 }

@@ -52,9 +52,9 @@ class CommentsController extends AppController
         }
         
         $data = $this->Posts->find('all', [
-            'contain' => ['Users'],
-            'conditions' => ['Posts.id' => $id],
-        ])->first();
+                                        'contain' => ['Users'],
+                                        'conditions' => ['Posts.id' => $id]
+                                  ])->first();
         
         $this->set(compact('data', 'comment'));
     }
@@ -84,7 +84,6 @@ class CommentsController extends AppController
             
             return $this->jsonResponse($datum);
         }
-        
         $this->set(compact('comment'));
     }
 

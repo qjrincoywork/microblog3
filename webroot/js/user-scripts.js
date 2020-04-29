@@ -7,7 +7,6 @@ var fxUser = {
         $("[data-toggle='tooltip']").tooltip();
         
         $('.form-control').on('input change', function () {
-            console.log('fxUser UIHelper');
             $(this).removeClass('is-invalid');
             $(this).nextAll('.help-block').fadeOut();
         });
@@ -118,7 +117,7 @@ $(function () {
                             fd.append($(this).attr("name"), $(this)[0].files[0]);
                         }
                     });
-                    console.log
+                    
                     posting = $.ajax({
                         type: "post",
                         url: action,
@@ -168,7 +167,6 @@ $(function () {
                     }
                 }
             } else {
-                console.log(data);
                 if(data.success) {
                     switch (className)
                     {

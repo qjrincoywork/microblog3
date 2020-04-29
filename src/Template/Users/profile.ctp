@@ -18,6 +18,9 @@
                 $myPost = $postUserId === $id ? true : false ;
                 
                 $isLiked = $this->System->postReaction($postId, $id, 'Likes');
+                $likedBefore = $this->System->likedBefore($postId, $id, 'Likes');
+                $likeHrefAction = $likedBefore ? 'delete' : 'add';
+
                 $isCommented = $this->System->postReaction($postId, $id, 'Comments');
                 $isShared = $this->System->postReaction($postId, $id, 'Posts');
                 
@@ -112,7 +115,7 @@
                                     <button href='".$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])."' class='comment_post col-sm-3'>
                                         <span class='" . ($isCommented ? 'fas' : 'far') ." fa-comment' data-toggle='tooltip' data-placement='top' title='Comment'> ". (!empty($commentCount) ? $commentCount : '')."</span>
                                     </button>
-                                    <button href='".$this->Url->build(['controller' => 'likes', 'action' => 'add', $postId])."' class='like_post col-sm-3'>
+                                    <button href='".$this->Url->build(['controller' => 'likes', 'action' => $likeHrefAction, $postId])."' class='like_post col-sm-3'>
                                         <span class='" . ($isLiked ? 'fas' : 'far') ." fa-heart' data-toggle='tooltip' data-placement='top' title='Like'> ". (!empty($likeCount) ? $likeCount : '') ."</span>
                                     </button>
                                     <button href='".$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])."' class='share_post col-sm-3'>

@@ -30,10 +30,9 @@ class PostsController extends AppController
     
     public function view($id)
     {
-        $data = $this->Posts->find('all', [
-            'contain' => ['Users'],
-            'conditions' => ['Posts.id' => $id,'Posts.deleted' => 0],
-        ])->first();
+        $data = $this->Posts->find('all', ['contain' => ['Users'],
+                                           'conditions' => ['Posts.id' => $id,'Posts.deleted' => 0],
+                ])->first();
         
         $this->paginate = [
             'limit' => 3,
@@ -68,8 +67,7 @@ class PostsController extends AppController
 
                 $path = $uploadFolder."/".$this->request->getData()['image']['name'];
                 
-                if(move_uploaded_file($this->request->getData()['image']['tmp_name'],
-                                      $path)) {
+                if(move_uploaded_file($this->request->getData()['image']['tmp_name'], $path)) {
                     $this->request->getData()['image'] = $path;
                 }
                 $post->image = $path;
@@ -111,8 +109,7 @@ class PostsController extends AppController
 
                 $path = $uploadFolder."/".$postData['image']['name'];
                 
-                if(move_uploaded_file($postData['image']['tmp_name'],
-                                      $path)) {
+                if(move_uploaded_file($postData['image']['tmp_name'], $path)) {
                         $post->image = $path;
                 }
             }

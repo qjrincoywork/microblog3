@@ -19,10 +19,13 @@
                                     </a></div>";
                         if(!$me){
                             $isFollowing = $this->System->isFollowing($myId, $following->id);
+                            $hadFollowed = $this->System->hadFollowed($myId, $following->id);
+                            $hrefAction = $hadFollowed ? 'unfollow' : 'follow';
+
                             $btnTitle = $isFollowing ? 'Unfollow' : 'Follow';
                             $btnClass = $isFollowing ? 'unfollow_user btn-danger' : 'follow_user btn-primary';
             $user .=  "<div id='buttons-container' class='follow-button col-sm-5 mt-3'>
-                            <button href='".$this->Url->build(['controller' => 'users', 'action' => 'follow', $following->id])."' type='button' class='".$btnClass." btn-sm'>".$btnTitle."</button>
+                            <button href='".$this->Url->build(['controller' => 'users', 'action' => $hrefAction, $following->id])."' type='button' class='".$btnClass." btn-sm'>".$btnTitle."</button>
                         </div>";
                         }
             $user .=       "<div class='post-content mb-3 col-sm-12'>

@@ -3,17 +3,18 @@
     $article = '';
     if(isset($data)) {
         foreach ($data as $key => $value) {
-            $gender = $value['user']->gender;
-            $profilePic = $value['user']->profile_image;
-            $postAgo = $value['post_ago'];
-            $postId = $value['id'];
-            $postUserId = $value['user_id'];
-            // $postFullName = $value['user']->full_name;
-            $postFullName = $this->System->getFullNameById($postUserId);
-            // $userId = $this->Session->read('Auth.User')['id'];
+            $gender = $value->user->gender;
+            $profilePic = $value->user->profile_image;
+            $postAgo = $value->post_ago;
+            $postId = $value->id;
+            $postUserId = $value->user_id;
+            $postFullName = $value->user->full_name;
             
-            $isShared = $this->System->postReaction($postId, $myId, 'Posts');
+            $likedBefore = $this->System->likedBefore($postId, $myId, 'Likes');
+            $likeHrefAction = $likedBefore ? 'delete' : 'add';
+
             $isLiked = $this->System->postReaction($postId, $myId, 'Likes');
+            $isShared = $this->System->postReaction($postId, $myId, 'Posts');
             $isCommented = $this->System->postReaction($postId, $myId, 'Comments');
             
             $likeCount = $this->System->reactionCount($postId, 'Likes');
@@ -47,8 +48,7 @@
                             $sharedPost =  $this->System->getSharedPost($value->post_id);
                             if($sharedPost) {
                                 $sharedProfile = $sharedPost->user->profile_image;
-                                $sharedFullName = $this->System->getFullNameById($sharedPost->user->id);
-                                // $sharedFullName =  $sharedPost->user->full_name;
+                                $sharedFullName =  $sharedPost->user->full_name;
                                 $sharedPostAgo = $sharedPost->post_ago;
                                 $sharedContent = h($sharedPost->content);
                                 
@@ -94,7 +94,7 @@
                                 <button href='".$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])."' class='comment_post col-sm-3'>
                                     <span class='" . ($isCommented ? 'fas' : 'far') ." fa-comment' data-toggle='tooltip' data-placement='top' title='Comment'> ". (!empty($commentCount) ? $commentCount : '')."</span>
                                 </button>
-                                <button href='".$this->Url->build(['controller' => 'likes', 'action' => 'add', $postId])."' class='like_post col-sm-3'>
+                                <button href='".$this->Url->build(['controller' => 'likes', 'action' => $likeHrefAction, $postId])."' class='like_post col-sm-3'>
                                     <span class='" . ($isLiked ? 'fas' : 'far') ." fa-heart' data-toggle='tooltip' data-placement='top' title='Like'> ". (!empty($likeCount) ? $likeCount : '') ."</span>
                                 </button>
                                 <button href='".$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])."' class='share_post col-sm-3'>

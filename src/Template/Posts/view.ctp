@@ -7,12 +7,14 @@
     $postAgo = $data->post_ago;
     $sharePic = $data->user->profile_image;
     $fullName = $data->user->full_name;
-    $userId = $myId;
-    $myPost = $data->user_id === $userId ? true : false;
+    $myPost = $data->user_id === $myId ? true : false;
     
-    $isLiked = $this->System->postReaction($postId, $userId, 'Likes');
-    $isCommented = $this->System->postReaction($postId, $userId, 'Comments');
-    $isShared = $this->System->postReaction($postId, $userId, 'Posts');
+    $likedBefore = $this->System->likedBefore($postId, $myId, 'Likes');
+    $likeHrefAction = $likedBefore ? 'delete' : 'add';
+
+    $isLiked = $this->System->postReaction($postId, $myId, 'Likes');
+    $isCommented = $this->System->postReaction($postId, $myId, 'Comments');
+    $isShared = $this->System->postReaction($postId, $myId, 'Posts');
     
     $shareCount = $this->System->reactionCount($postId, 'Posts');
     $commentCount = $this->System->reactionCount($postId, 'Comments');
@@ -107,7 +109,7 @@
             <button href='<?=$this->Url->build(['controller' => 'comments', 'action' => 'add', $postId])?>' class='comment_post col-sm-4'>
                 <span class='<?= ($isCommented ? 'fas' : 'far') ?> fa-comment' data-toggle='tooltip' data-placement='top' title='Comment'> <?= (!empty($commentCount) ? $commentCount : '') ?></span>
             </button>
-            <button href='<?=$this->Url->build(['controller' => 'likes', 'action' => 'add', $postId])?>' class='like_post col-sm-4'>
+            <button href='<?=$this->Url->build(['controller' => 'likes', 'action' => $likeHrefAction, $postId])?>' class='like_post col-sm-4'>
                 <span class='<?= ($isLiked ? 'fas' : 'far') ?> fa-heart' data-toggle='tooltip' data-placement='top' title='Like'> <?= (!empty($likeCount) ? $likeCount : '') ?></span>
             </button>
             <button href='<?=$this->Url->build(['controller' => 'posts', 'action' => 'share', $postId])?>' class='share_post col-sm-4'>
@@ -120,14 +122,11 @@
     if($comments) {
         $comment = '';
         foreach ($comments as $val) {
-            $myComment = $val->user_id === $userId ? true : false;
-            
+            $myComment = $val->user_id === $myId ? true : false;
             $commenter = $val->user->full_name;
             $commenterImg = $val->user->profile_image;
-            
             $commentAgo = $val->comment_ago;
             $commentId = $val->id;
-
             $commentClassListener = $val->deleted ? 'restore_comment fas fa-recycle' : 'delete_comment fa fa-trash';
             $commentTitle = $val->deleted ? 'Restore' : 'Delete';
             

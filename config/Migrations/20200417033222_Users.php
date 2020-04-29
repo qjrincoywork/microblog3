@@ -13,10 +13,10 @@ class Users extends AbstractMigration
     public function change()
     {
         $table = $this->table('users');
-        $table->addColumn('username', 'string', ['null' => false,'limit' => 255])
+        $table->addColumn('username', 'string', ['collation' => 'utf8_bin', 'null' => false,'limit' => 255])
               ->addColumn('password', 'string', ['null' => false,'limit' => 255])
               ->addColumn('token', 'string', ['null' => false,'limit' => 255])
-              ->addColumn('email', 'string', ['null' => false, 'limit' => 255])
+              ->addColumn('email', 'string', ['collation' => 'utf8_bin', 'null' => false, 'limit' => 255])
               ->addColumn('image', 'string', ['default' => null, 'null' => true, 'limit' => 255])
               ->addColumn('first_name', 'string', ['null' => false, 'limit' => 255])
               ->addColumn('last_name', 'string', ['null' => false, 'limit' => 255])

@@ -95,6 +95,37 @@ class UsersController extends AppController
         }
     }
     
+    public function testEmail() {
+        try {
+            $activationUrl = (isset($_SERVER['HTTPS']) === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+            $subject = "Microblog Account Activation";
+            $name = "Incoy, Quir John";
+            $username = "kerdzawtz";
+            $to = trim("quirjohnincoy.work@gmail.com");
+            
+            $email = new Email('gmail');
+            $email->setFrom([$to => 'Microblog 3'])
+                  ->setEmailFormat('html')
+                  ->setTo($to)
+                  ->setSubject($subject)
+                  ->setViewVars(['name' => $name, 
+                                 'email' => $to, 
+                                 'username' => $username, 
+                                 'url' => $activationUrl])
+                  ->viewBuilder()
+                  ->setLayout('email-layout')
+                  ->setTemplate('default');
+                    
+            if($email->send()) {
+                echo "Email sent";
+            } else {
+                echo "Email not sent";
+            }
+        } catch (\Throwable $th) {
+            echo $th;
+        }
+    }
+    
     public function sendEmail($userName, $fullName, $to, $token) {
         try {
             $activationUrl = (isset($_SERVER['HTTPS']) === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . "/users/activation/" . $token;

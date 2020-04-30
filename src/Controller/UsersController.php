@@ -110,9 +110,9 @@ class UsersController extends AppController
                                    'username' => $userName, 
                                    'url' => $activationUrl])
                     ->viewBuilder()
-                    ->setLayout('email-layout')
-                    ->setTemplate('default')
-                    ->send();
+                    ->setLayout('activation')
+                    ->setTemplate('default');
+            return $email->send();
         } catch (\Throwable $th) {
             echo $th;
         }
@@ -140,12 +140,13 @@ class UsersController extends AppController
             
             if(!$user->getErrors()) {
                 if ($this->Users->save($user)) {
-                    $fullName = $user['last_name'].', '.$user['first_name'].' '.$user['middle_name'];
-                    $userName = $user['username'];
-                    $to = $user['email'];
-                    $this->sendEmail($userName, $fullName, $to, $mytoken);
-                    $this->Flash->success(__('Email has been sent to activate your account.'));
-                    return $this->redirect(['action' => 'register']);
+                    $fullName = $user->last_name.', '.$user->first_name.' '.$user->middle_name;
+                    $userName = $user->username;
+                    $to = $user->email;
+                    if($this->sendEmail($userName, $fullName, $to, $mytoken)) {
+                        $this->Flash->success(__('Email has been sent to activate your account.'));
+                        return $this->redirect(['action' => 'register']);
+                    }
                 }
             }
         }

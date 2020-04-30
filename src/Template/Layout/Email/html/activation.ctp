@@ -145,7 +145,7 @@
                 </div>
                 <br/>Thanks, <br/>
                 <br/>
-                <p><small>This is an auto generated message. please do not reply</small></p>
+                <p><small>This is an auto generated message. please do not reply.</small></p>
             </div>
         </div>
     </body>
